@@ -1,7 +1,9 @@
 import { sdk } from "@farcaster/frame-sdk";
 import { useEffect } from "react";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
+import HowToPlay from "./pages/HowToPlay";
 
 function App() {
   useEffect(() => {
@@ -9,9 +11,30 @@ function App() {
   }, []);
 
   return (
-    <>
-      <LandingPage />
-    </>
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route
+          path="/leaderboard"
+          element={
+            <div className="text-white">Leaderboard Page (Coming Soon)</div>
+          }
+        />
+        <Route
+          path="/badges"
+          element={<div className="text-white">Badges Page (Coming Soon)</div>}
+        />
+        <Route
+          path="/play"
+          element={<div className="text-white">Play Page (Coming Soon)</div>}
+        />
+        <Route
+          path="/history"
+          element={<div className="text-white">History Page (Coming Soon)</div>}
+        />
+        <Route path="/how-to-play" element={<HowToPlay />} />
+      </Routes>
+    </Router>
   );
 }
 
@@ -41,7 +64,11 @@ function SignButton() {
 
   return (
     <>
-      <button type="button" onClick={() => signMessage({ message: "hello world" })} disabled={isPending}>
+      <button
+        type="button"
+        onClick={() => signMessage({ message: "hello world" })}
+        disabled={isPending}
+      >
         {isPending ? "Signing..." : "Sign message"}
       </button>
       {data && (
