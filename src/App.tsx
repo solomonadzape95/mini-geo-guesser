@@ -1,6 +1,7 @@
 import { sdk } from "@farcaster/frame-sdk";
 import { useEffect } from "react";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
+import LandingPage from "./pages/LandingPage";
 
 function App() {
   useEffect(() => {
@@ -9,8 +10,7 @@ function App() {
 
   return (
     <>
-      <div>Mini App + Vite + TS + React + Wagmi</div>
-      <ConnectMenu />
+      <LandingPage />
     </>
   );
 }
