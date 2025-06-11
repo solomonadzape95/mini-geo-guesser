@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "tsc && vite build",
     "lint": "biome check src",
     "preview": "vite preview"
@@ -16,6 +16,7 @@
     "@heroicons/react": "^2.2.0",
     "@tailwindcss/vite": "^4.1.8",
     "@tanstack/react-query": "5.45.1",
+    "mapillary-js": "^4.1.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.6.2",

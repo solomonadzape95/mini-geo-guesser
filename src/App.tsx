@@ -4,6 +4,7 @@ import { useAccount, useConnect, useSignMessage } from "wagmi";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import HowToPlay from "./pages/HowToPlay";
+import Play from "./pages/Play";
 
 function App() {
   useEffect(() => {
@@ -26,7 +27,7 @@ function App() {
         />
         <Route
           path="/play"
-          element={<div className="text-white">Play Page (Coming Soon)</div>}
+          element={<Play />}
         />
         <Route
           path="/history"
