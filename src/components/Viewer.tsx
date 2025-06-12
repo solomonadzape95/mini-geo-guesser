@@ -18,15 +18,9 @@ export default function Viewer({ imageId, onLoad }: ViewerProps) {
       accessToken: import.meta.env.VITE_MAPILLARY_ACCESS_TOKEN,
       container: containerRef.current,
       imageId: imageId,
-      cameraControls: {
-        autoRotate: true,
-        autoRotateSpeed: 0.5,
-        enableRotate: true,
-        enableZoom: true,
-        enablePan: true,
-      },
+      cameraControls: mapillary.CameraControls.Street,
       component: {
-        cover: true,
+        cover: false,
         direction: true,
         image: true,
         marker: true,

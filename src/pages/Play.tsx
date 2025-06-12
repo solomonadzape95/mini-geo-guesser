@@ -65,7 +65,7 @@ export default function Play() {
     if (savedStartTime) {
       const startTime = parseInt(savedStartTime);
       const elapsed = Date.now() - startTime;
-      const remaining = Math.max(0, 30 - Math.floor(elapsed / 1000));
+      const remaining = Math.max(0, 120 - Math.floor(elapsed / 1000));
 
       if (remaining > 0) {
         setGameStartTime(startTime);
@@ -91,7 +91,7 @@ export default function Play() {
     const startTime = Date.now();
     setGameStartTime(startTime);
     setGameState("playing");
-    setTimeLeft(30);
+    setTimeLeft(120);
     localStorage.setItem("challengeStartTime", startTime.toString());
   }, []);
 
@@ -101,7 +101,7 @@ export default function Play() {
 
     const interval = setInterval(() => {
       const elapsed = Date.now() - gameStartTime;
-      const remaining = Math.max(0, 30 - Math.floor(elapsed / 1000));
+      const remaining = Math.max(0, 120 - Math.floor(elapsed / 1000));
 
       setTimeLeft(remaining);
 
@@ -151,7 +151,7 @@ export default function Play() {
 
   return (
     <AppLayout>
-      <div className="relative w-full h-screen flex items-center justify-center overflow-auto">
+      <div className="relative w-full min-h-screen flex items-center justify-center overflow-auto">
         {/* Main Image Viewer */}
         <div className="w-full h-full bg-transparent">
           <Viewer imageId="498763468214164" onLoad={handleImageLoaded} />
@@ -194,7 +194,7 @@ export default function Play() {
             <span
               className={`text-xl md:text-2xl font-juvanze font-bold ${getTimerColor(timeLeft)}`}
             >
-              {timeLeft}s
+              {Math.floor(timeLeft / 60)}:{timeLeft % 60}
             </span>
           </div>
         )}
