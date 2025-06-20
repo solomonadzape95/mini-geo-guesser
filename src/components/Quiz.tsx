@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
 interface Question {
   id: number;
@@ -33,54 +34,74 @@ const sampleQuestions: Question[] = [
 ];
 
 export default function Quiz({ onComplete }: QuizProps) {
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answers, setAnswers] = useState<number[]>([]);
-  const [showResults, setShowResults] = useState(false);
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [answers, setAnswers] = useState<(number | null)[]>(new Array(sampleQuestions.length).fill(null));
+  const [quizState, setQuizState] = useState<'answering' | 'results'>('answering');
 
   const handleAnswer = (answerIndex: number) => {
-    const newAnswers = [...answers, answerIndex];
+    const newAnswers = [...answers];
+    newAnswers[currentQuestionIndex] = answerIndex;
     setAnswers(newAnswers);
 
-    if (currentQuestion < sampleQuestions.length - 1) {
-      setCurrentQuestion(currentQuestion + 1);
+    if (currentQuestionIndex < sampleQuestions.length - 1) {
+      setCurrentQuestionIndex(currentQuestionIndex + 1);
     } else {
-      setShowResults(true);
+      setQuizState('results');
     }
   };
 
-  const calculateScore = () => {
-    return answers.reduce((score, answer, index) => {
-      return score + (answer === sampleQuestions[index].correctAnswer ? 1 : 0);
+  if (quizState === 'results') {
+    const score = answers.reduce((acc: number, answer, index) => {
+      return acc + (answer === sampleQuestions[index].correctAnswer ? 1 : 0);
     }, 0);
-  };
 
-  if (showResults) {
-    const score = calculateScore();
     return (
-      <div className="bg-white rounded-lg p-4 sm:p-8 w-full max-w-lg mx-auto">
-        <h2 className="text-xl sm:text-2xl font-satoshi font-bold mb-4">Quiz Results</h2>
-        <p className="text-base sm:text-lg mb-6">
+      <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20 w-full max-w-2xl mx-auto">
+        <h2 className="text-xl sm:text-2xl font-satoshi font-bold mb-4 text-white text-center">Quiz Results</h2>
+        <p className="text-base sm:text-lg mb-6 text-white/80 text-center">
           You scored {score} out of {sampleQuestions.length}!
         </p>
+
+        <div className="space-y-4">
+          {sampleQuestions.map((q, index) => {
+            const userAnswer = answers[index];
+            const isCorrect = userAnswer === q.correctAnswer;
+            return (
+              <div key={q.id} className="bg-black/20 p-4 rounded-lg">
+                <p className="font-bold text-white">{q.question}</p>
+                <p className={`mt-2 text-sm ${isCorrect ? 'text-green-400' : 'text-red-400'}`}>
+                  Your answer: {userAnswer !== null ? q.options[userAnswer] : 'No answer'}
+                  {isCorrect ? <CheckCircleIcon className="w-5 h-5 inline ml-2" /> : <XCircleIcon className="w-5 h-5 inline ml-2" />}
+                </p>
+                {!isCorrect && (
+                  <p className="mt-1 text-sm text-green-400">
+                    Correct answer: {q.options[q.correctAnswer]}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
         <button
           onClick={onComplete}
-          className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-satoshi hover:bg-blue-700 transition-colors"
+          className="w-full mt-6 px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-satoshi hover:bg-blue-700 transition-colors"
         >
-          Continue to Badge
+          Claim Your Badge
         </button>
       </div>
     );
   }
 
-  const question = sampleQuestions[currentQuestion];
+  const question = sampleQuestions[currentQuestionIndex];
 
   return (
-    <div className="bg-white rounded-lg p-4 sm:p-8 w-full max-w-lg mx-auto">
+    <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-8 w-full max-w-2xl mx-auto border border-white/20">
       <div className="mb-4 sm:mb-6">
-        <span className="text-xs sm:text-sm text-gray-500 font-satoshi">
-          Question {currentQuestion + 1} of {sampleQuestions.length}
+        <span className="text-xs sm:text-sm text-white/60 font-satoshi">
+          Question {currentQuestionIndex + 1} of {sampleQuestions.length}
         </span>
-        <h2 className="text-lg sm:text-xl font-satoshi font-bold mt-2">
+        <h2 className="text-lg sm:text-xl font-satoshi font-bold mt-2 text-white">
           {question.question}
         </h2>
       </div>
@@ -90,7 +111,7 @@ export default function Quiz({ onComplete }: QuizProps) {
           <button
             key={index}
             onClick={() => handleAnswer(index)}
-            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base bg-gray-100 rounded-lg font-satoshi hover:bg-gray-200 transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base bg-white/10 text-white rounded-lg font-satoshi hover:bg-white/20 transition-colors"
           >
             {option}
           </button>

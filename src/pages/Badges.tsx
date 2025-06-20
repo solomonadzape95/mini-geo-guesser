@@ -175,7 +175,7 @@ const badgeCategories: BadgeCategory[] = [
 export default function Badges() {
   return (
     <AppLayout>
-      <div className="w-full min-h-screen py-8 px-4 md:px-8">
+      <div className="self-start w-full min-h-screen py-8 px-4 md:px-8">
         <h1 className="text-3xl md:text-4xl font-satoshi text-white mb-8 text-center">
           Your Achievements
         </h1>

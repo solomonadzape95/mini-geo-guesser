@@ -1,8 +1,9 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, Fragment } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import MapModal from "../components/MapModal";
 import Quiz from "../components/Quiz";
+import ResultMap from "../components/ResultMap";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
 import globeImg from "../assets/globe.png";
 
@@ -43,14 +44,15 @@ const calculateScore = (distance: number): number => {
 export default function Play() {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState<
-    "loading" | "ready" | "playing" | "finished" | "quiz"
+    "loading" | "ready" | "playing" | "results-map" | "quiz"
   >("loading");
   const [showMap, setShowMap] = useState(false);
   const [userGuess, setUserGuess] = useState<Location | null>(null);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState(120);
   const [score, setScore] = useState<number | null>(null);
   const [distance, setDistance] = useState<number | null>(null);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
+  const [showLockModal, setShowLockModal] = useState(false);
 
   // Get timer color based on time left
   const getTimerColor = (time: number): string => {
@@ -80,7 +82,7 @@ export default function Play() {
         setGameState("playing");
       } else {
         // Time already up, show results
-        setGameState("finished");
+        setGameState("results-map");
         localStorage.removeItem("challengeStartTime");
       }
     }
@@ -113,7 +115,7 @@ export default function Play() {
       setTimeLeft(remaining);
 
       if (remaining === 0) {
-        setGameState("finished");
+        setGameState("results-map");
         localStorage.removeItem("challengeStartTime");
 
         // Calculate score if user made a guess
@@ -138,9 +140,8 @@ export default function Play() {
   };
 
   const handleShowResults = () => {
-    setGameState("finished");
+    setGameState("results-map");
     localStorage.removeItem("challengeStartTime");
-
     if (userGuess) {
       const dist = calculateDistance(userGuess, ACTUAL_LOCATION);
       const finalScore = calculateScore(dist);
@@ -160,15 +161,17 @@ export default function Play() {
     <AppLayout>
       <div className="w-full min-h-screen flex flex-col items-center justify-start py-4 px-2 md:px-0 gap-6">
         {/* Main Image Section */}
-        <div className="w-full flex justify-center">
-          <img
-            src={globeImg}
-            alt="Guess the location"
-            className="max-w-full max-h-[40vh] md:max-h-[70vh] rounded-xl shadow-lg object-contain"
-            onLoad={handleImageLoaded}
-            style={{ margin: "0 auto" }}
-          />
-        </div>
+        {gameState !== "results-map" && gameState !== "quiz" && (
+          <div className="w-full flex justify-center">
+            <img
+              src={globeImg}
+              alt="Guess the location"
+              className="max-w-full max-h-[20vh] md:max-h-[50vh] rounded-xl shadow-lg object-contain"
+              onLoad={handleImageLoaded}
+              style={{ margin: "0 auto" }}
+            />
+          </div>
+        )}
 
         {/* Loading Section */}
         {gameState === "loading" && (
@@ -181,7 +184,7 @@ export default function Play() {
         {gameState === "ready" && (
           <section className="w-full flex flex-col items-center justify-center py-8">
             <div className="text-3xl md:text-5xl font-satoshi text-white mb-6">Ready to Start?</div>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">You'll have 30 seconds to guess the location. Click the map to make your guess!</p>
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">You'll have 120 seconds to guess the location. Click the map to make your guess!</p>
             <button
               onClick={startGame}
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-satoshi flex items-center gap-3 mx-auto transition-colors shadow-md"
@@ -211,31 +214,58 @@ export default function Play() {
               <MapIcon className="w-6 h-6 md:w-8 md:h-8 text-white" />
             </button>
             <div className="text-white/70 text-center text-sm mt-2">Tap the map icon to make your guess!</div>
+            {/* Lock In Answer Button */}
+            <button
+              onClick={() => setShowLockModal(true)}
+              disabled={!userGuess}
+              className="mt-6 px-8 py-3 bg-blue-700 text-white rounded-lg font-satoshi font-bold shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Lock In Answer
+            </button>
           </section>
         )}
 
-        {/* Results Section */}
-        {gameState === "finished" && (
-          <section className="w-full flex flex-col items-center justify-center py-8">
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-md w-full text-center border border-white/20">
-              <h2 className="text-3xl md:text-4xl font-satoshi text-white mb-6">Time's Up!</h2>
-              <div className="mb-6">
-                <div className="text-5xl md:text-6xl font-satoshi text-blue-400 mb-2">{score || 0}</div>
-                <div className="text-lg text-white/80">out of 5,000 points</div>
+        {/* Results Map Section */}
+        {gameState === "results-map" && (
+          <section className="w-full flex flex-col items-center justify-center pb-8md:py-8">
+            {userGuess ? (
+              <div className="flex flex-col items-center justify-center w-[90vw]">
+                <div className="relative w-10/12 h-[60vh] rounded-2xl overflow-hidden border-2 border-white/20">
+                <ResultMap userGuess={userGuess} actualLocation={ACTUAL_LOCATION} />
+                
               </div>
-              {distance !== null && (
-                <div className="text-white/70 mb-6">You were {Math.round(distance)} km away from the actual location</div>
-              )}
-              {!userGuess && (
+              <div className="border-2 border-red-500 bg-white/10 backdrop-blur-md rounded-2xl p-4 w-11/12 max-w-md text-center border border-white/20 mt-4">
+                  <h2 className="text-2xl font-satoshi text-white mb-2">Results</h2>
+                  <div className="text-4xl font-satoshi text-blue-400 mb-1">{score || 0}</div>
+                  <div className="text-md text-white/80">out of 5,000 points</div>
+                  {distance !== null && (
+                    <div className="text-white/70 mt-2">You were {Math.round(distance)} km away</div>
+                  )}
+                  <button
+                    onClick={() => setGameState("quiz")}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-satoshi transition-colors mt-4"
+                  >
+                    Continue to Quiz
+                  </button>
+                </div>
+              </div>
+              
+            ) : (
+              <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-md w-full text-center border border-white/20">
+                <h2 className="text-3xl md:text-4xl font-satoshi text-white mb-6">Time's Up!</h2>
                 <div className="text-red-400 mb-6">No guess was made</div>
-              )}
-              <button
-                onClick={() => setGameState("quiz")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors mt-2"
-              >
-                Continue to Quiz
-              </button>
-            </div>
+                <div className="mb-6">
+                  <div className="text-5xl md:text-6xl font-satoshi text-blue-400 mb-2">0</div>
+                  <div className="text-lg text-white/80">out of 5,000 points</div>
+                </div>
+                <button
+                  onClick={() => setGameState("quiz")}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors mt-2"
+                >
+                  Continue to Quiz
+                </button>
+              </div>
+            )}
           </section>
         )}
 
@@ -253,7 +283,32 @@ export default function Play() {
           <MapModal
             onClose={() => setShowMap(false)}
             onLocationSelect={handleMapClick}
+            initialLocation={userGuess}
           />
+        )}
+
+        {/* Lock In Confirmation Modal */}
+        {showLockModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+            <div className="bg-white rounded-xl p-8 max-w-sm w-full shadow-lg text-center">
+              <h2 className="text-xl font-satoshi font-bold mb-4">Lock In Your Answer?</h2>
+              <p className="mb-6 text-gray-700">Are you sure you want to lock in your guess? You won't be able to change it after this.</p>
+              <div className="flex justify-center gap-4">
+                <button
+                  onClick={() => setShowLockModal(false)}
+                  className="px-6 py-2 rounded-lg bg-gray-200 text-gray-800 font-satoshi font-semibold hover:bg-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => { setShowLockModal(false); handleShowResults(); }}
+                  className="px-6 py-2 rounded-lg bg-blue-600 text-white font-satoshi font-semibold hover:bg-blue-700"
+                >
+                  Yes, Lock In
+                </button>
+              </div>
+            </div>
+          </div>
         )}
       </div>
     </AppLayout>
