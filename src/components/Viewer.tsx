@@ -21,10 +21,10 @@ function debounce<T extends (...args: any[]) => void>(fn: T, delay: number) {
 
 export default function Viewer({ imageId, onLoad }: ViewerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const viewerRef = useRef<mapillary.Viewer | null>(null);
+  const viewerRef = useRef<mapillary.Viewer | null>(null);  
   const lastImageIdRef = useRef<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [pending, setPending] = useState(false); // For future navigation/zoom
+  const [, setPending] = useState(false); // For future navigation/zoom
 
   // Debounced viewer initialization
   const initializeViewer = debounce((imgId: string) => {

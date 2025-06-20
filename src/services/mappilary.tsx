@@ -6,8 +6,8 @@ container.style.height = "300px";
 document.body.appendChild(container);
 
 const options: ViewerOptions = {
-  accessToken: "<your access token>",
+  accessToken: import.meta.env.VITE_MAPILLARY_ACCESS_TOKEN,
   container,
-  imageId: "<your image ID for initializing the viewer>",
+  imageId: "1234567890",
 };
-const viewer = new Viewer(options);
+export const viewer = new Viewer(options);
