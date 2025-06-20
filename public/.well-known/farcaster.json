@@ -1,1 +1,19 @@
-{}
+{
+    "frame": {
+      "version": "1",
+      "name": "Mini GeoGuessr",
+      "iconUrl": "https://mini-geo-guessr.vercel.app/logo.png",
+      "homeUrl": "https://mini-geo-guessr.vercel.app/",
+      "imageUrl": "https://mini-geo-guessr.vercel.app/opengraph-image",
+      "buttonTitle": "🚩 Start",
+      "splashImageUrl": "https://mini-geo-guessr.vercel.app/logo.png",
+      "splashBackgroundColor": "#000000",
+      "requiredChains": [
+        "eip155:1"
+      ],
+      "requiredCapabilities": [
+        "actions.signIn",
+        "wallet.getEthereumProvider"
+      ]
+    }
+  }
