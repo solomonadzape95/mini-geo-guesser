@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        juvanze: ["Juvanze", "sans-serif"],
+        satoshi: ["Satoshi-Variable", "sans-serif"],
       },
     },
   },

@@ -4,7 +4,7 @@ import AppLayout from "../layout/AppLayout";
 import MapModal from "../components/MapModal";
 import Quiz from "../components/Quiz";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
-import Viewer from "../components/Viewer";
+import globeImg from "../assets/globe.png";
 
 interface Location {
   lat: number;
@@ -57,6 +57,13 @@ export default function Play() {
     if (time > 20) return "text-green-400";
     if (time > 10) return "text-yellow-400";
     return "text-red-400";
+  };
+
+  // Format timer as MM:SS with leading zeros
+  const formatTimer = (time: number): string => {
+    const min = Math.floor(time / 60).toString().padStart(2, '0');
+    const sec = (time % 60).toString().padStart(2, '0');
+    return `${min}:${sec}`;
   };
 
   // Load saved game state from localStorage
@@ -151,117 +158,97 @@ export default function Play() {
 
   return (
     <AppLayout>
-      <div className="relative w-full min-h-screen flex items-center justify-center overflow-auto">
-        {/* Main Image Viewer */}
-        <div className="w-full h-full bg-transparent">
-          <Viewer imageId="498763468214164" onLoad={handleImageLoaded} />
+      <div className="w-full min-h-screen flex flex-col items-center justify-start py-4 px-2 md:px-0 gap-6">
+        {/* Main Image Section */}
+        <div className="w-full flex justify-center">
+          <img
+            src={globeImg}
+            alt="Guess the location"
+            className="max-w-full max-h-[40vh] md:max-h-[70vh] rounded-xl shadow-lg object-contain"
+            onLoad={handleImageLoaded}
+            style={{ margin: "0 auto" }}
+          />
         </div>
 
-        {/* Loading Overlay */}
+        {/* Loading Section */}
         {gameState === "loading" && (
-          <div className="absolute inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center">
-            <div className="text-4xl md:text-6xl font-juvanze text-white animate-pulse">
-              Loading...
-            </div>
-          </div>
+          <section className="w-full flex flex-col items-center justify-center py-12">
+            <div className="text-4xl md:text-6xl font-satoshi text-white animate-pulse">Loading...</div>
+          </section>
         )}
 
-        {/* Ready to Start Overlay */}
+        {/* Ready to Start Section */}
         {gameState === "ready" && (
-          <div className="absolute inset-0 bg-transparent backdrop-blur-sm flex items-center justify-center">
-            <div className="text-center px-4">
-              <div className="text-3xl md:text-5xl font-juvanze text-white mb-8">
-                Ready to Start?
-              </div>
-              <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md mx-auto">
-                You'll have 30 seconds to guess the location. Click the map to
-                make your guess!
-              </p>
-              <button
-                onClick={startGame}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-juvanze flex items-center gap-3 mx-auto transition-colors"
-              >
-                <PlayIcon className="w-6 h-6" />
-                Start Game
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Game Timer */}
-        {gameState === "playing" && (
-          <div className="absolute top-4 right-4 bg-black/20 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-            <span
-              className={`text-xl md:text-2xl font-juvanze font-bold ${getTimerColor(timeLeft)}`}
+          <section className="w-full flex flex-col items-center justify-center py-8">
+            <div className="text-3xl md:text-5xl font-satoshi text-white mb-6">Ready to Start?</div>
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">You'll have 30 seconds to guess the location. Click the map to make your guess!</p>
+            <button
+              onClick={startGame}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-satoshi flex items-center gap-3 mx-auto transition-colors shadow-md"
             >
-              {Math.floor(timeLeft / 60)}:{timeLeft % 60}
-            </span>
-          </div>
+              <PlayIcon className="w-6 h-6" />
+              Start Game
+            </button>
+          </section>
         )}
 
-        {/* User Guess Indicator */}
-        {gameState === "playing" && userGuess && (
-          <div className="absolute top-4 left-4 bg-green-600/80 backdrop-blur-sm px-4 py-2 rounded-full border border-green-400/30">
-            <span className="text-white font-juvanze">📍 Guess Made</span>
-          </div>
-        )}
-
-        {/* Map Button */}
+        {/* Playing Section */}
         {gameState === "playing" && (
-          <button
-            onClick={() => setShowMap(true)}
-            className="absolute bottom-6 right-6 w-14 h-14 md:w-16 md:h-16 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-lg transition-colors"
-          >
-            <MapIcon className="w-6 h-6 md:w-8 md:h-8 text-white" />
-          </button>
+          <section className="w-full flex flex-col items-center gap-4">
+            {/* Timer */}
+            <div className="flex items-center justify-center mt-2">
+              <span className={`text-2xl md:text-3xl font-satoshi font-bold ${getTimerColor(timeLeft)}`}>{formatTimer(timeLeft)}</span>
+            </div>
+            {/* Guess Indicator */}
+            {userGuess && (
+              <div className="bg-green-600/80 px-4 py-2 rounded-full border border-green-400/30 text-white font-satoshi text-center">📍 Guess Made</div>
+            )}
+            {/* Map Button */}
+            <button
+              onClick={() => setShowMap(true)}
+              className="mt-4 w-14 h-14 md:w-16 md:h-16 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-lg transition-colors"
+            >
+              <MapIcon className="w-6 h-6 md:w-8 md:h-8 text-white" />
+            </button>
+            <div className="text-white/70 text-center text-sm mt-2">Tap the map icon to make your guess!</div>
+          </section>
         )}
 
-        {/* Results Overlay */}
+        {/* Results Section */}
         {gameState === "finished" && (
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <section className="w-full flex flex-col items-center justify-center py-8">
             <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-md w-full text-center border border-white/20">
-              <h2 className="text-3xl md:text-4xl font-juvanze text-white mb-6">
-                Time's Up!
-              </h2>
-
+              <h2 className="text-3xl md:text-4xl font-satoshi text-white mb-6">Time's Up!</h2>
               <div className="mb-6">
-                <div className="text-5xl md:text-6xl font-juvanze text-blue-400 mb-2">
-                  {score || 0}
-                </div>
+                <div className="text-5xl md:text-6xl font-satoshi text-blue-400 mb-2">{score || 0}</div>
                 <div className="text-lg text-white/80">out of 5,000 points</div>
               </div>
-
               {distance !== null && (
-                <div className="text-white/70 mb-6">
-                  You were {Math.round(distance)} km away from the actual
-                  location
-                </div>
+                <div className="text-white/70 mb-6">You were {Math.round(distance)} km away from the actual location</div>
               )}
-
               {!userGuess && (
                 <div className="text-red-400 mb-6">No guess was made</div>
               )}
-
               <button
                 onClick={() => setGameState("quiz")}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-juvanze transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors mt-2"
               >
                 Continue to Quiz
               </button>
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Quiz Overlay */}
+        {/* Quiz Section */}
         {gameState === "quiz" && (
-          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4">
+          <section className="w-full flex flex-col items-center justify-center py-8">
             <div className="w-full max-w-2xl">
               <Quiz onComplete={handleQuizComplete} />
             </div>
-          </div>
+          </section>
         )}
 
-        {/* Map Modal */}
+        {/* Map Modal (remains as modal) */}
         {showMap && (
           <MapModal
             onClose={() => setShowMap(false)}

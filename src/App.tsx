@@ -5,6 +5,10 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LandingPage from "./pages/LandingPage";
 import HowToPlay from "./pages/HowToPlay";
 import Play from "./pages/Play";
+import Leaderboard from "./pages/Leaderboard";
+import Badges from "./pages/Badges";
+import History from "./pages/History";
+import Profile from "./pages/Profile";
 
 function App() {
   useEffect(() => {
@@ -15,24 +19,11 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/leaderboard"
-          element={
-            <div className="text-white">Leaderboard Page (Coming Soon)</div>
-          }
-        />
-        <Route
-          path="/badges"
-          element={<div className="text-white">Badges Page (Coming Soon)</div>}
-        />
-        <Route
-          path="/play"
-          element={<Play />}
-        />
-        <Route
-          path="/history"
-          element={<div className="text-white">History Page (Coming Soon)</div>}
-        />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/badges" element={<Badges />} />
+        <Route path="/play" element={<Play />} />
+        <Route path="/history" element={<History />} />
+        <Route path="/profile" element={<Profile />} />
         <Route path="/how-to-play" element={<HowToPlay />} />
       </Routes>
     </Router>

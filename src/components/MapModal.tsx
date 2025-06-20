@@ -47,7 +47,7 @@ export default function MapModal({ onClose, onLocationSelect }: MapModalProps) {
         </button>
 
         <div className="p-4">
-          <h2 className="text-xl font-juvanze font-bold mb-4">
+          <h2 className="text-xl font-satoshi font-bold mb-4">
             Select Location
           </h2>
           <div
@@ -77,7 +77,7 @@ export default function MapModal({ onClose, onLocationSelect }: MapModalProps) {
             <button
               onClick={handleConfirm}
               disabled={!selectedLocation}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-juvanze disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg font-satoshi disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Confirm Location
             </button>

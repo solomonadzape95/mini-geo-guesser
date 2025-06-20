@@ -57,14 +57,14 @@ export default function Quiz({ onComplete }: QuizProps) {
   if (showResults) {
     const score = calculateScore();
     return (
-      <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
-        <h2 className="text-2xl font-juvanze font-bold mb-4">Quiz Results</h2>
-        <p className="text-lg mb-6">
+      <div className="bg-white rounded-lg p-4 sm:p-8 w-full max-w-lg mx-auto">
+        <h2 className="text-xl sm:text-2xl font-satoshi font-bold mb-4">Quiz Results</h2>
+        <p className="text-base sm:text-lg mb-6">
           You scored {score} out of {sampleQuestions.length}!
         </p>
         <button
           onClick={onComplete}
-          className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg font-juvanze hover:bg-blue-700 transition-colors"
+          className="w-full px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-satoshi hover:bg-blue-700 transition-colors"
         >
           Continue to Badge
         </button>
@@ -75,22 +75,22 @@ export default function Quiz({ onComplete }: QuizProps) {
   const question = sampleQuestions[currentQuestion];
 
   return (
-    <div className="bg-white rounded-lg p-8 max-w-lg w-full mx-4">
-      <div className="mb-6">
-        <span className="text-sm text-gray-500 font-juvanze">
+    <div className="bg-white rounded-lg p-4 sm:p-8 w-full max-w-lg mx-auto">
+      <div className="mb-4 sm:mb-6">
+        <span className="text-xs sm:text-sm text-gray-500 font-satoshi">
           Question {currentQuestion + 1} of {sampleQuestions.length}
         </span>
-        <h2 className="text-xl font-juvanze font-bold mt-2">
+        <h2 className="text-lg sm:text-xl font-satoshi font-bold mt-2">
           {question.question}
         </h2>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-3 sm:space-y-4">
         {question.options.map((option, index) => (
           <button
             key={index}
             onClick={() => handleAnswer(index)}
-            className="w-full px-4 py-3 text-left bg-gray-100 rounded-lg font-juvanze hover:bg-gray-200 transition-colors"
+            className="w-full px-3 sm:px-4 py-2 sm:py-3 text-left text-sm sm:text-base bg-gray-100 rounded-lg font-satoshi hover:bg-gray-200 transition-colors"
           >
             {option}
           </button>

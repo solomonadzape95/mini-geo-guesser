@@ -1,5 +1,6 @@
 import AppLayout from "../layout/AppLayout";
 import image from "../assets/image.png";
+import { Link } from "react-router-dom";
 
 interface StepProps {
   number: number;
@@ -23,14 +24,16 @@ function Step({
       <div className="flex-1">
         <div className="bg-black/30 backdrop-blur-sm p-6 rounded-lg">
           <div className="flex items-center gap-4 mb-4">
-            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-juvanze text-xl">
+            <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-satoshi text-xl">
               {number}
             </div>
-            <h3 className="text-2xl font-bold text-white font-juvanze">
-              {title}
-            </h3>
+            <div className="flex-1">
+              <h3 className="text-2xl font-bold text-white font-satoshi">
+                {title}
+              </h3>
+              <p className="text-gray-300 font-satoshi">{description}</p>
+            </div>
           </div>
-          <p className="text-gray-300 font-juvanze">{description}</p>
         </div>
       </div>
       <div className="flex-1">
@@ -49,7 +52,7 @@ export default function HowToPlay() {
     <AppLayout>
       <div className="min-h-screen px-4 sm:px-6 lg:px-8 md:pt-16 pt-8 pb-32 overflow-auto">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-12 text-center font-juvanze">
+          <h1 className="text-4xl sm:text-5xl font-bold text-white mb-12 text-center font-satoshi">
             How to Play
           </h1>
 
@@ -86,19 +89,18 @@ export default function HowToPlay() {
           </div>
 
           <div className="mt-16 text-center">
-            <h2 className="text-2xl font-bold text-white mb-4 font-juvanze">
-              Ready to Start Your Journey?
+            <h2 className="text-2xl font-bold text-white mb-4 font-satoshi">
+              Ready to test your geography knowledge?
             </h2>
-            <p className="text-gray-300 mb-8 font-juvanze">
-              Join thousands of players testing their geography knowledge and
-              collecting unique badges!
+            <p className="text-gray-300 mb-8 font-satoshi">
+              Click the button below to start your first game!
             </p>
-            <a
-              href="/play"
-              className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors font-juvanze cursor-pointer"
+            <Link
+              to="/play"
+              className="inline-block px-8 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors font-satoshi cursor-pointer"
             >
-              Start Playing Now
-            </a>
+              Start Game
+            </Link>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import {
   TrophyIcon,
   CheckBadgeIcon,
   UserCircleIcon,
+  ClockIcon,
 } from "@heroicons/react/24/outline";
 
 export default function Navigation() {
@@ -16,7 +17,7 @@ export default function Navigation() {
             <div className="flex items-center">
               <Link
                 to="/"
-                className="text-white font-juvanze font-bold text-xl cursor-pointer"
+                className="text-white font-satoshi font-bold text-xl cursor-pointer"
               >
                 GeoGuessr
               </Link>
@@ -24,30 +25,37 @@ export default function Navigation() {
             <div className="flex items-center space-x-8">
               <Link
                 to="/"
-                className="text-gray-300 hover:text-white flex items-center font-juvanze"
+                className="text-gray-300 hover:text-white flex items-center font-satoshi"
               >
                 <HomeIcon className="h-5 w-5 mr-2" />
                 Home
               </Link>
               <Link
                 to="/leaderboard"
-                className="text-gray-300 hover:text-white flex items-center font-juvanze"
+                className="text-gray-300 hover:text-white flex items-center font-satoshi"
               >
                 <TrophyIcon className="h-5 w-5 mr-2" />
                 Leaderboard
               </Link>
               <Link
                 to="/badges"
-                className="text-gray-300 hover:text-white flex items-center font-juvanze"
+                className="text-gray-300 hover:text-white flex items-center font-satoshi"
               >
                 <CheckBadgeIcon className="h-5 w-5 mr-2" />
                 Badges
+              </Link>
+              <Link
+                to="/history"
+                className="text-gray-300 hover:text-white flex items-center font-satoshi"
+              >
+                <ClockIcon className="h-5 w-5 mr-2" />
+                History
               </Link>
             </div>
             <div className="flex items-center">
               <Link
                 to="/profile"
-                className="text-gray-300 hover:text-white flex items-center font-juvanze"
+                className="text-gray-300 hover:text-white flex items-center font-satoshi"
               >
                 <div className="relative">
                   <UserCircleIcon className="h-7 w-7" />
@@ -64,28 +72,35 @@ export default function Navigation() {
         <div className="flex justify-around items-center h-16">
           <Link
             to="/"
-            className="text-gray-300 hover:text-white flex flex-col items-center font-juvanze"
+            className="text-gray-300 hover:text-white flex flex-col items-center font-satoshi"
           >
             <HomeIcon className="h-6 w-6" />
             <span className="text-xs mt-1">Home</span>
           </Link>
           <Link
             to="/leaderboard"
-            className="text-gray-300 hover:text-white flex flex-col items-center font-juvanze"
+            className="text-gray-300 hover:text-white flex flex-col items-center font-satoshi"
           >
             <TrophyIcon className="h-6 w-6" />
             <span className="text-xs mt-1">Leaderboard</span>
           </Link>
           <Link
             to="/badges"
-            className="text-gray-300 hover:text-white flex flex-col items-center font-juvanze"
+            className="text-gray-300 hover:text-white flex flex-col items-center font-satoshi"
           >
             <CheckBadgeIcon className="h-6 w-6" />
             <span className="text-xs mt-1">Badges</span>
           </Link>
           <Link
+            to="/history"
+            className="text-gray-300 hover:text-white flex flex-col items-center font-satoshi"
+          >
+            <ClockIcon className="h-6 w-6" />
+            <span className="text-xs mt-1">History</span>
+          </Link>
+          <Link
             to="/profile"
-            className="text-gray-300 hover:text-white flex flex-col items-center font-juvanze"
+            className="text-gray-300 hover:text-white flex flex-col items-center font-satoshi"
           >
             <div className="relative">
               <UserCircleIcon className="h-6 w-6" />
