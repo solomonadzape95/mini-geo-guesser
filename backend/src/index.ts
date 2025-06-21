@@ -140,7 +140,7 @@ const app = new Hono<{
 
 // Enable CORS
 app.use(cors({
-  origin: ['http://localhost:3000', 'https://your-frontend-domain.com'],
+  origin: ['http://localhost:5173', 'https://mini-geo-guesser-a8hd.vercel.app/'],
   credentials: true,
 }))
 

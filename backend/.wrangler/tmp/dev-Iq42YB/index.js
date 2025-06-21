@@ -11297,7 +11297,7 @@ var quickAuthMiddleware = createMiddleware(async (c, next) => {
 });
 var app = new Hono2();
 app.use(cors({
-  origin: ["http://localhost:3000", "https://your-frontend-domain.com"],
+  origin: ["http://localhost:5173", "https://mini-geo-guesser-a8hd.vercel.app/"],
   credentials: true
 }));
 app.get("/health", (c) => {
