@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: number
+          locked: boolean | null
           name: string | null
         }
         Insert: {
@@ -22,6 +23,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
+          locked?: boolean | null
           name?: string | null
         }
         Update: {
@@ -29,6 +31,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
+          locked?: boolean | null
           name?: string | null
         }
         Relationships: [

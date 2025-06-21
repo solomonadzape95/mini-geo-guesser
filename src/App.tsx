@@ -9,6 +9,7 @@ import Leaderboard from "./pages/Leaderboard";
 import Badges from "./pages/Badges";
 import History from "./pages/History";
 import Profile from "./pages/Profile";
+import QueryClientProvider from "./providers/QueryClientProvider";
 
 function App() {
   useEffect(() => {
@@ -16,17 +17,19 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
+    <QueryClientProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/badges" element={<Badges />} />
         <Route path="/play" element={<Play />} />
         <Route path="/history" element={<History />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/how-to-play" element={<HowToPlay />} />
-      </Routes>
-    </Router>
+          <Route path="/how-to-play" element={<HowToPlay />} />
+        </Routes>
+      </Router>
+    </QueryClientProvider>
   );
 }
 

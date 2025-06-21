@@ -1,176 +1,122 @@
+import React, { Suspense } from "react";
 import AppLayout from "../layout/AppLayout";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
+import { useBadgesQuery } from "../hooks/useBadges";
+import { SkeletonBadge, SkeletonCard } from "../components/Skeleton";
+import { BadgeWithCategory } from "../types";
 
-interface Badge {
-  id: string;
-  name: string;
-  description: string;
-  progress: string;
-  unlocked: boolean;
+function BadgesContent() {
+  const { data: badges, isLoading, error } = useBadgesQuery();
+
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+        {Array.from({ length: 6 }).map((_, index) => (
+          <SkeletonCard key={index} />
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center text-red-400 py-12">
+        <p>Failed to load badges</p>
+        <p className="text-sm text-white/70 mt-2">{error.message}</p>
+      </div>
+    );
+  }
+
+  if (!badges || badges.length === 0) {
+    return (
+      <div className="text-center text-white/70 py-12">
+        <div className="max-w-md mx-auto">
+          <LockClosedIcon className="w-16 h-16 mx-auto mb-4 text-white/30" />
+          <h3 className="text-xl font-satoshi text-white mb-2">
+            No badges available
+          </h3>
+          <p className="text-white/60">
+            Start playing games to unlock achievements and badges!
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Group badges by category
+  const badgesByCategory = badges.reduce((acc, badge) => {
+    const categoryId = String(badge.category?.id || 'uncategorized');
+    const categoryName = badge.category?.name || 'Uncategorized';
+    const categoryDescription = badge.category?.description || 'Miscellaneous achievements';
+    
+    if (!acc[categoryId]) {
+      acc[categoryId] = {
+        id: categoryId,
+        name: categoryName,
+        description: categoryDescription,
+        badges: []
+      };
+    }
+    
+    acc[categoryId].badges.push(badge);
+    return acc;
+  }, {} as Record<string, { id: string; name: string; description: string; badges: BadgeWithCategory[] }>);
+
+  const categories = Object.values(badgesByCategory);
+
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+      {categories.map((category) => (
+        <div
+          key={category.id}
+          className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20"
+        >
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <h2 className="text-xl md:text-2xl font-satoshi text-white mb-2">
+                {category.name}
+              </h2>
+              <p className="text-sm text-white/70">{category.description}</p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {category.badges.map((badge) => (
+              <div
+                key={badge.id}
+                className={`relative rounded-xl p-4 ${
+                  !badge.locked ? "bg-white/20" : "bg-white/5"
+                }`}
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-satoshi text-white">
+                    {badge.name}
+                  </h3>
+                  {badge.locked && (
+                    <LockClosedIcon className="w-5 h-5 text-white/50" />
+                  )}
+                </div>
+                <p className="text-sm text-white/70 mb-2">
+                  {badge.description || "No description available"}
+                </p>
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-white/50">
+                    {badge.locked ? "Locked" : "Unlocked"}
+                  </div>
+                  {!badge.locked && (
+                    <div className="h-1 w-24 bg-white/20 rounded-full">
+                      <div className="h-full bg-blue-500 rounded-full w-full" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
-
-interface BadgeCategory {
-  id: string;
-  name: string;
-  description: string;
-  unlocked: boolean;
-  badges: Badge[];
-}
-
-const badgeCategories: BadgeCategory[] = [
-  {
-    id: "europe",
-    name: "European Explorer",
-    description: "Master of European geography",
-    unlocked: true,
-    badges: [
-      {
-        id: "baltic-beast",
-        name: "Baltic Beast",
-        description: "Successfully identify 3 Baltic countries (Estonia, Latvia, Lithuania)",
-        progress: "0/3",
-        unlocked: true,
-      },
-      {
-        id: "mediterranean-master",
-        name: "Mediterranean Master",
-        description: "Guess 5 Mediterranean coastal countries",
-        progress: "0/5",
-        unlocked: true,
-      },
-      {
-        id: "alpine-ace",
-        name: "Alpine Ace",
-        description: "Identify 3 Alpine region countries",
-        progress: "0/3",
-        unlocked: true,
-      },
-      {
-        id: "nordic-navigator",
-        name: "Nordic Navigator",
-        description: "Find 4 Nordic countries",
-        progress: "0/4",
-        unlocked: true,
-      },
-    ],
-  },
-  {
-    id: "asia",
-    name: "Asian Adventure",
-    description: "Expert of Asian territories",
-    unlocked: false,
-    badges: [
-      {
-        id: "himalayan-hero",
-        name: "Himalayan Hero",
-        description: "Locate 3 countries in the Himalayan region",
-        progress: "0/3",
-        unlocked: false,
-      },
-      {
-        id: "southeast-sage",
-        name: "Southeast Sage",
-        description: "Master 5 Southeast Asian countries",
-        progress: "0/5",
-        unlocked: false,
-      },
-      {
-        id: "steppe-specialist",
-        name: "Steppe Specialist",
-        description: "Identify 3 Central Asian steppe countries",
-        progress: "0/3",
-        unlocked: false,
-      },
-    ],
-  },
-  {
-    id: "africa",
-    name: "African Adventurer",
-    description: "Conqueror of African geography",
-    unlocked: false,
-    badges: [
-      {
-        id: "saharan-seeker",
-        name: "Saharan Seeker",
-        description: "Find 4 countries in the Sahara region",
-        progress: "0/4",
-        unlocked: false,
-      },
-      {
-        id: "savanna-scout",
-        name: "Savanna Scout",
-        description: "Locate 5 countries in the African savanna",
-        progress: "0/5",
-        unlocked: false,
-      },
-      {
-        id: "great-lakes-guru",
-        name: "Great Lakes Guru",
-        description: "Master 3 African Great Lakes countries",
-        progress: "0/3",
-        unlocked: false,
-      },
-    ],
-  },
-  {
-    id: "americas",
-    name: "Americas Authority",
-    description: "Master of the New World",
-    unlocked: false,
-    badges: [
-      {
-        id: "andean-ace",
-        name: "Andean Ace",
-        description: "Identify 3 countries along the Andes",
-        progress: "0/3",
-        unlocked: false,
-      },
-      {
-        id: "caribbean-captain",
-        name: "Caribbean Captain",
-        description: "Find 4 Caribbean island nations",
-        progress: "0/4",
-        unlocked: false,
-      },
-      {
-        id: "amazon-expert",
-        name: "Amazon Expert",
-        description: "Locate 3 countries containing the Amazon rainforest",
-        progress: "0/3",
-        unlocked: false,
-      },
-    ],
-  },
-  {
-    id: "terrain",
-    name: "Terrain Tracker",
-    description: "Expert of geographical features",
-    unlocked: false,
-    badges: [
-      {
-        id: "island-insider",
-        name: "Island Insider",
-        description: "Identify 5 island nations worldwide",
-        progress: "0/5",
-        unlocked: false,
-      },
-      {
-        id: "desert-detective",
-        name: "Desert Detective",
-        description: "Find 4 countries with major deserts",
-        progress: "0/4",
-        unlocked: false,
-      },
-      {
-        id: "mountain-master",
-        name: "Mountain Master",
-        description: "Locate 5 countries with major mountain ranges",
-        progress: "0/5",
-        unlocked: false,
-      },
-    ],
-  },
-];
 
 export default function Badges() {
   return (
@@ -180,68 +126,15 @@ export default function Badges() {
           Your Achievements
         </h1>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
-          {badgeCategories.map((category) => (
-            <div
-              key={category.id}
-              className={`bg-white/10 backdrop-blur-md rounded-2xl p-6 border ${
-                category.unlocked ? "border-white/20" : "border-white/10"
-              }`}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h2 className="text-xl md:text-2xl font-satoshi text-white mb-2">
-                    {category.name}
-                  </h2>
-                  <p className="text-sm text-white/70">{category.description}</p>
-                </div>
-                {!category.unlocked && (
-                  <LockClosedIcon className="w-6 h-6 text-white/50" />
-                )}
-              </div>
-
-              <div className="space-y-4">
-                {category.badges.map((badge) => (
-                  <div
-                    key={badge.id}
-                    className={`relative rounded-xl p-4 ${
-                      badge.unlocked && category.unlocked
-                        ? "bg-white/20"
-                        : "bg-white/5"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="text-lg font-satoshi text-white">
-                        {badge.name}
-                      </h3>
-                      {(!badge.unlocked || !category.unlocked) && (
-                        <LockClosedIcon className="w-5 h-5 text-white/50" />
-                      )}
-                    </div>
-                    <p className="text-sm text-white/70 mb-2">{badge.description}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-sm text-white/50">{badge.progress}</div>
-                      {badge.unlocked && category.unlocked && (
-                        <div className="h-1 w-24 bg-white/20 rounded-full">
-                          <div
-                            className="h-full bg-blue-500 rounded-full"
-                            style={{
-                              width: `${
-                                (parseInt(badge.progress.split("/")[0]) /
-                                  parseInt(badge.progress.split("/")[1])) *
-                                100
-                              }%`,
-                            }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
+        <Suspense fallback={
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+            {Array.from({ length: 6 }).map((_, index) => (
+              <SkeletonCard key={index} />
+            ))}
+          </div>
+        }>
+          <BadgesContent />
+        </Suspense>
       </div>
     </AppLayout>
   );
