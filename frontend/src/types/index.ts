@@ -1,4 +1,4 @@
-import { Database } from "../../types";
+import { Database } from "../../../types";
 
 // Extract base types from the database
 export type Game = Database["public"]["Tables"]["games"]["Row"];

@@ -1,0 +1,24 @@
+{
+  "name": "mini-geo-guessr-backend",
+  "version": "1.0.0",
+  "description": "Backend authentication service for Mini Geo Guessr",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev --config wrangler.dev.toml",
+    "deploy": "wrangler deploy",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@farcaster/quick-auth": "^0.0.6",
+    "@hono/node-server": "^1.8.0",
+    "@supabase/supabase-js": "^2.38.0",
+    "hono": "^4.8.2",
+    "dotenv": "^16.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "wrangler": "^4.20.5"
+  }
+}

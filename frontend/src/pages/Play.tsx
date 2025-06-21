@@ -5,9 +5,11 @@ import MapModal from "../components/MapModal";
 import Quiz from "../components/Quiz";
 import ResultMap from "../components/ResultMap";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
-import { usePlayGameQuery, useSaveGameResultMutation } from "../hooks/useGames";
+import { usePlayGameQuery } from "../hooks/useGames";
 import { SkeletonCard, SkeletonText } from "../components/Skeleton";
 import globeImg from "../assets/globe.png";
+import { useAuth } from "../contexts/AuthContext";
+import { saveGameResult } from "../services/auth";
 
 interface Location {
   lat: number;
@@ -50,8 +52,8 @@ const parseCoordinates = (coordsString: string): Location | null => {
 
 function PlayContent() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: gameData, isLoading, error } = usePlayGameQuery();
-  const saveGameMutation = useSaveGameResultMutation();
   
   const [gameState, setGameState] = useState<
     "loading" | "ready" | "playing" | "results-map" | "quiz"
@@ -63,6 +65,7 @@ function PlayContent() {
   const [distance, setDistance] = useState<number | null>(null);
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [showLockModal, setShowLockModal] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   // Get actual location from game data
   const actualLocation = gameData?.game.coords ? parseCoordinates(gameData.game.coords) : null;
@@ -166,13 +169,21 @@ function PlayContent() {
     }
   };
 
-  const handleQuizComplete = () => {
+  const handleQuizComplete = async () => {
     // Save game result to database
-    if (gameData?.game.id && score !== null) {
-      saveGameMutation.mutate({
-        gameId: gameData.game.id,
-        score: score
-      });
+    if (gameData?.game.id && score !== null && user) {
+      try {
+        setIsSaving(true);
+        await saveGameResult({
+          gameId: gameData.game.id,
+          score: score
+        });
+      } catch (error) {
+        console.error('Failed to save game result:', error);
+        // Continue to badge mint even if save fails
+      } finally {
+        setIsSaving(false);
+      }
     }
     navigate("/badge-mint");
   };
@@ -227,7 +238,7 @@ function PlayContent() {
           <img
             src={globeImg}
             alt="Guess the location"
-            className="max-w-full max-h-[20vh] md:max-h-[50vh] rounded-xl shadow-lg object-contain"
+            className="max-w-full max-h-[20vh] md:max-h-[50vh] rounded-xl object-contain"
             style={{ margin: "0 auto" }}
           />
         </div>
@@ -240,9 +251,9 @@ function PlayContent() {
           <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">
             You'll have 120 seconds to guess the location. Click the map to make your guess!
           </p>
-          {gameData.game.name && (
+          {/* {gameData.game.name && (
             <p className="text-white/60 mb-4">Today's Challenge: {gameData.game.name}</p>
-          )}
+          )} */}
           <button
             onClick={startGame}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-satoshi flex items-center gap-3 mx-auto transition-colors shadow-md"
@@ -363,6 +374,16 @@ function PlayContent() {
                 Yes, Lock In
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Loading overlay for saving */}
+      {isSaving && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
+          <div className="bg-white rounded-xl p-8 max-w-sm w-full shadow-lg text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <p className="text-gray-700">Saving your game result...</p>
           </div>
         </div>
       )}

@@ -1,6 +1,7 @@
 import "../styles/stars.css";
 import Navigation from "../components/Navigation";
 import { AuthProvider } from "../contexts/AuthContext";
+import AuthDebugger from "../components/AuthDebugger";
 
 export default function BackgroundLayout({
   children,
@@ -17,6 +18,8 @@ export default function BackgroundLayout({
         <div className="w-full h-full overflow-auto flex items-center justify-center">
           {children}
         </div>
+        {/* AuthDebugger for testing - remove in production */}
+        {import.meta.env.DEV && <AuthDebugger />}
       </div>
     </AuthProvider>
   );

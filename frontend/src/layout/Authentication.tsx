@@ -1,7 +1,7 @@
 import  { useState, useEffect } from "react";
 import { sdk } from "@farcaster/frame-sdk";
 
-const BACKEND_ORIGIN = "https://your-backend.miniapps.farcaster.xyz";
+const BACKEND_ORIGIN = "https://bc09-102-90-103-110.ngrok-free.app";
 
 export function Authentication() {
   const [user, setUser] = useState<{ fid: number; primaryAddress?: string }>();
