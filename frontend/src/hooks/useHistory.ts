@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getUserGameHistory, getRecentGames, getUserBestScore } from '../services/history';
-import { UserHistoryEntry } from '../types';
+// import { UserHistoryEntry } from '../types';
 
 // Query keys
 export const historyKeys = {

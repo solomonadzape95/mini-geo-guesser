@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { getBadgesWithCategories, getBadgesByCategory, getCategories } from '../services/badges';
-import { BadgeWithCategory } from '../types';
+// import { BadgeWithCategory } from '../types';
 
 // Query keys
 export const badgeKeys = {

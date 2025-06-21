@@ -97,7 +97,8 @@ export async function saveGameResult(gameId: number, score: number): Promise<Api
       .from('user_games')
       .insert({
         gameID: gameId,
-        score: score
+        score: score,
+        lastSignIn: new Date().toISOString()
       })
       .select('id')
       .single();

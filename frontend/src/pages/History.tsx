@@ -1,8 +1,8 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import AppLayout from "../layout/AppLayout";
 import { MapPinIcon, TrophyIcon, ClockIcon } from "@heroicons/react/24/outline";
 import { useUserHistoryQuery } from "../hooks/useHistory";
-import { SkeletonGameCard, SkeletonText } from "../components/Skeleton";
+import { SkeletonGameCard } from "../components/Skeleton";
 
 // Placeholder for user ID - in a real app this would come from auth context
 const CURRENT_USER_ID = 1; // This should be replaced with actual user ID from auth

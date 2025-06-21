@@ -1,8 +1,8 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import AppLayout from "../layout/AppLayout";
 import { LockClosedIcon } from "@heroicons/react/24/solid";
 import { useBadgesQuery } from "../hooks/useBadges";
-import { SkeletonBadge, SkeletonCard } from "../components/Skeleton";
+import { SkeletonCard } from "../components/Skeleton";
 import { BadgeWithCategory } from "../types";
 
 function BadgesContent() {

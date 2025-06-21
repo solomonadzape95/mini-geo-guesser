@@ -6,7 +6,7 @@ import Quiz from "../components/Quiz";
 import ResultMap from "../components/ResultMap";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { usePlayGameQuery } from "../hooks/useGames";
-import { SkeletonCard, SkeletonText } from "../components/Skeleton";
+import { SkeletonCard } from "../components/Skeleton";
 import globeImg from "../assets/globe.png";
 import { useAuth } from "../contexts/AuthContext";
 import { saveGameResult } from "../services/auth";
