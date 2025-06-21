@@ -139,10 +139,11 @@ const app = new Hono<{
 }>()
 
 // Enable CORS
-app.use(cors({
-  origin: ['http://localhost:5173', 'https://mini-geo-guesser-a8hd.vercel.app/'],
-  credentials: true,
-}))
+app.use("*", cors({
+    origin: 'https://mini-geo-guesser-a8hd.vercel.app',
+    allowHeaders: ['Content-Type', 'Authorization'],
+    allowMethods: ['GET', 'POST', 'OPTIONS'],
+  }))
 
 // Health check endpoint
 app.get('/health', (c) => {

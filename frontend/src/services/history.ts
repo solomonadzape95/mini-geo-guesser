@@ -31,8 +31,7 @@ export async function getUserGameHistory(userId?: number): Promise<ApiResponse<U
       gameID: entry.gameID,
       score: entry.score,
       created_at: entry.created_at,
-      lastSignIn: entry.lastSignIn || '',
-      streak: entry.streak || 0,
+     
       userID: entry.userID || userId,
       game: entry.game as Game
     }));
@@ -73,8 +72,7 @@ export async function getRecentGames(userId?: number, limit: number = 10): Promi
       gameID: entry.gameID,
       score: entry.score,
       created_at: entry.created_at,
-      lastSignIn: entry.lastSignIn || '',
-      streak: entry.streak || 0,
+     
       userID: entry.userID || userId,
       game: entry.game as Game
     }));

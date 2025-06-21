@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host",
+    "type": "npx supabase gen types typescript --project-id nmjqspxigvaohkwpnhjy --schema public > types.ts",
     "build": "tsc && vite build",
     "lint": "biome check src",
     "preview": "vite preview"

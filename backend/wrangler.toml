@@ -2,17 +2,20 @@ name = "mini-geo-guessr-auth"
 main = "src/index.ts"
 compatibility_date = "2024-01-01"
 
-[vars]
-HOSTNAME = "localhost:8787"
+# Development environment
+# [vars]
+# HOSTNAME = "localhost:8787"
 
 # These will be set as secrets in production
-# SUPABASE_URL = "your-supabase-url"
-# SUPABASE_SERVICE_ROLE_KEY = "your-service-role-key"
+# SUPABASE_URL = https://nmjqspxigvaohkwpnhjy.supabase.co
+# SUPABASE_SERVICE_ROLE_KEY = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5tanFzcHhpZ3Zhb2hrd3BuaGp5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTA0ODc2NjMsImV4cCI6MjA2NjA2MzY2M30.VdOVQsob5rAyr__wojWbhN374jnIStTQFX3TftQFM_0
 
 [[env.production]]
 name = "mini-geo-guessr-auth"
-vars = { HOSTNAME = "your-production-domain.com" }
+[vars]
+HOSTNAME ="https://mini-geo-guessr-auth-production.geoid.workers.dev"
 
-[[env.staging]]
-name = "mini-geo-guessr-auth-staging"
-vars = { HOSTNAME = "your-staging-domain.com" } 
+#[[env.staging]]
+#name ="mini-geo-guessr-auth-staging"
+#[vars]
+#HOSTNAME = "your-staging-domain.com" 

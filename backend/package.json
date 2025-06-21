@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev --config wrangler.dev.toml",
-    "deploy": "wrangler deploy",
+    "deploy": "wrangler deploy --env production",
     "build": "tsc"
   },
   "dependencies": {

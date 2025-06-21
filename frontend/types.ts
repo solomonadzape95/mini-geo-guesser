@@ -97,16 +97,22 @@ export type Database = {
           created_at: string
           fid: string
           id: number
+          lastSignIn: string | null
+          streak: number | null
         }
         Insert: {
           created_at?: string
           fid: string
           id?: number
+          lastSignIn?: string | null
+          streak?: number | null
         }
         Update: {
           created_at?: string
           fid?: string
           id?: number
+          lastSignIn?: string | null
+          streak?: number | null
         }
         Relationships: []
       }
@@ -195,27 +201,21 @@ export type Database = {
           created_at: string
           gameID: number | null
           id: number
-          lastSignIn: string
           score: number | null
-          streak: number | null
           userID: number | null
         }
         Insert: {
           created_at?: string
           gameID?: number | null
           id?: number
-          lastSignIn: string
           score?: number | null
-          streak?: number | null
           userID?: number | null
         }
         Update: {
           created_at?: string
           gameID?: number | null
           id?: number
-          lastSignIn?: string
           score?: number | null
-          streak?: number | null
           userID?: number | null
         }
         Relationships: [
