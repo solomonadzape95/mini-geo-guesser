@@ -1,0 +1,9 @@
+{
+	"name": "Geo Champion",
+	"description": "Awarded for mastering 3 geography challenges in Mini‑Geo‑Guesser.",
+	"image": "https://mini-geo-guesser-a8hd.vercel.app/images/geo-champion.png",
+	"attributes": [
+		{ "trait_type": "Category", "value": "Geography" },
+		{ "trait_type": "Level", "value": "Champion" }
+	]
+}

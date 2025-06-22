@@ -1,0 +1,9 @@
+{
+	"name": "Globe Trotter",
+	"description": "Earned for answering 3 Geo‑Guesser questions correctly.",
+	"image": "https://mini-geo-guesser-a8hd.vercel.app/images/globe-trotter.png",
+	"attributes": [
+		{ "trait_type": "Category", "value": "Adventure" },
+		{ "trait_type": "Level", "value": "Globetrotter" }
+	]
+}

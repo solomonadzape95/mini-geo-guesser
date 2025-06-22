@@ -1,0 +1,9 @@
+{
+	"name": "Geo Master",
+	"description": "For players who achieved perfect score in 3 geography rounds.",
+	"image": "https://mini-geo-guesser-a8hd.vercel.app/images/geo-master.png",
+	"attributes": [
+		{ "trait_type": "Category", "value": "Geography" },
+		{ "trait_type": "Level", "value": "Master" }
+	]
+}

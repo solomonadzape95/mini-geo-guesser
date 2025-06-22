@@ -1,0 +1,9 @@
+{
+	"name": "World Explorer",
+	"description": "Given to explorers who completed 3 global questions.",
+	"image": "https://mini-geo-guesser-a8hd.vercel.app/images/world-explorer.png",
+	"attributes": [
+		{ "trait_type": "Category", "value": "Travel" },
+		{ "trait_type": "Level", "value": "Explorer" }
+	]
+}
