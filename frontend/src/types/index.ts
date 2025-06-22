@@ -14,7 +14,12 @@ export interface GameWithQuestions extends Game {
 }
 
 export interface BadgeWithCategory extends Omit<Badge, 'category'> {
+  imageUrl: string;
   category: Category | null;
+}
+
+export interface BadgeWithCategoryAndClaimed extends BadgeWithCategory {
+  claimed: boolean;
 }
 
 export interface UserHistoryEntry extends UserGame {

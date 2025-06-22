@@ -15,6 +15,7 @@ export type Database = {
           created_at: string
           description: string | null
           id: number
+          imageUrl: string
           locked: boolean | null
           name: string | null
         }
@@ -23,6 +24,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
+          imageUrl?: string
           locked?: boolean | null
           name?: string | null
         }
@@ -31,6 +33,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: number
+          imageUrl?: string
           locked?: boolean | null
           name?: string | null
         }
@@ -67,6 +70,7 @@ export type Database = {
       }
       games: {
         Row: {
+          badgeID: number | null
           coords: string
           created_at: string
           date: string | null
@@ -75,6 +79,7 @@ export type Database = {
           played: boolean | null
         }
         Insert: {
+          badgeID?: number | null
           coords: string
           created_at?: string
           date?: string | null
@@ -83,6 +88,7 @@ export type Database = {
           played?: boolean | null
         }
         Update: {
+          badgeID?: number | null
           coords?: string
           created_at?: string
           date?: string | null
@@ -90,29 +96,37 @@ export type Database = {
           name?: string | null
           played?: boolean | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "games_badgeID_fkey"
+            columns: ["badgeID"]
+            isOneToOne: false
+            referencedRelation: "badges"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
           created_at: string
           fid: string
           id: number
-          lastSignIn: string | null
-          streak: number | null
+          lastSignIn: string
+          streak: number
         }
         Insert: {
           created_at?: string
           fid: string
           id?: number
-          lastSignIn?: string | null
-          streak?: number | null
+          lastSignIn: string
+          streak: number
         }
         Update: {
           created_at?: string
           fid?: string
           id?: number
-          lastSignIn?: string | null
-          streak?: number | null
+          lastSignIn?: string
+          streak?: number
         }
         Relationships: []
       }

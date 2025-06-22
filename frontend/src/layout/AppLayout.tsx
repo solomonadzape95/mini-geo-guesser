@@ -15,7 +15,7 @@ export default function BackgroundLayout({
         <div id="stars"></div>
         <div id="stars2"></div>
         <div id="stars3"></div>
-        <div className="w-full h-full overflow-auto flex items-center justify-center">
+        <div className="w-full h-full overflow-auto flex items-center justify-center pb-24">
           {children}
         </div>
         {/* AuthDebugger for testing - remove in production */}

@@ -1,51 +1,86 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
-import { useBadgesQuery, useMintBadge } from "../hooks/useBadges";
+import { useBadgesQuery, useMintBadge, useUserProfile } from "../hooks/useBadges";
 import { SkeletonCard } from "../components/Skeleton";
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import { BadgeWithCategory, Badge } from "../types";
+
+const STREAK_BADGES: { [key: number]: string } = {
+  1: "1-Day Streak",
+  3: "3-Day Streak",
+  5: "5-Day Streak",
+};
+
+interface ProfileBadge {
+  id: number;
+  claimed: boolean;
+}
 
 function BadgeMintContent() {
   const navigate = useNavigate();
-  const { data: badgesData, isLoading, error } = useBadgesQuery();
+  const location = useLocation();
+  const { badgeId: gameBadgeId } = location.state || {};
+  
+  const { data: badges, isLoading: isLoadingBadges, error: badgesError } = useBadgesQuery();
+  const { data: userProfile, refetch: refetchProfile } = useUserProfile();
   const mintBadgeMutation = useMintBadge();
   
-  const [selectedBadge, setSelectedBadge] = useState<any>(null);
+  const [gameBadge, setGameBadge] = useState<BadgeWithCategory | null>(null);
+  const [streakBadge, setStreakBadge] = useState<BadgeWithCategory | null>(null);
   const [mintStatus, setMintStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
 
-  // Find the first unlocked badge that hasn't been claimed
   useEffect(() => {
-    if (badgesData) {
-      const availableBadge = badgesData.find((badge: any) => 
-        !badge.locked && !badge.claimed
-      );
-      setSelectedBadge(availableBadge || null);
+    if (badges && gameBadgeId) {
+      const foundBadge = badges.find((b: BadgeWithCategory) => b.id === gameBadgeId);
+      setGameBadge(foundBadge || null);
     }
-  }, [badgesData]);
+  }, [badges, gameBadgeId]);
 
   const handleMint = async () => {
-    if (!selectedBadge) return;
+    if (!gameBadge) return;
     
     setMintStatus("minting");
     setErrorMessage("");
     
     try {
-      await mintBadgeMutation.mutateAsync(selectedBadge.id);
+      // Mint the game badge
+      await mintBadgeMutation.mutateAsync(gameBadge.id);
       setMintStatus("success");
+
+      // Check for streak badge
+      await handleStreakCheck();
       
-      // Navigate to badges page after a short delay
+      // Navigate to badges page after a delay
       setTimeout(() => {
         navigate("/badges");
-      }, 2000);
+      }, 4000);
     } catch (error) {
       setMintStatus("error");
       setErrorMessage(error instanceof Error ? error.message : "Failed to mint badge");
     }
   };
 
+  const handleStreakCheck = async () => {
+    // Refetch profile to get the latest streak
+    const { data: updatedProfile } = await refetchProfile();
+    const streak = updatedProfile?.streak;
+
+    if (streak && STREAK_BADGES[streak] && badges) {
+      const streakBadgeName = STREAK_BADGES[streak];
+      const streakBadgeToMint = badges.find((b: BadgeWithCategory) => b.name === streakBadgeName);
+      const isBadgeAlreadyClaimed = updatedProfile?.badges.some((b: ProfileBadge) => b.id === streakBadgeToMint?.id && b.claimed);
+
+      if (streakBadgeToMint && !isBadgeAlreadyClaimed) {
+        setStreakBadge(streakBadgeToMint);
+        await mintBadgeMutation.mutateAsync(streakBadgeToMint.id);
+      }
+    }
+  };
+
   // Loading state
-  if (isLoading) {
+  if (isLoadingBadges) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
         <div className="text-4xl md:text-6xl font-satoshi text-white animate-pulse mb-8">Loading Badge...</div>
@@ -55,11 +90,11 @@ function BadgeMintContent() {
   }
 
   // Error state
-  if (error) {
+  if (badgesError) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
         <div className="text-2xl md:text-4xl font-satoshi text-red-400 mb-4">Failed to Load Badge</div>
-        <p className="text-white/70 mb-8">{error.message}</p>
+        <p className="text-white/70 mb-8">{badgesError.message}</p>
         <button
           onClick={() => window.location.reload()}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-satoshi"
@@ -70,17 +105,17 @@ function BadgeMintContent() {
     );
   }
 
-  // No badge available
-  if (!selectedBadge) {
+  // No badge to mint
+  if (!gameBadge) {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
-        <div className="text-2xl md:text-4xl font-satoshi text-white mb-4">No Badge Available</div>
-        <p className="text-white/70 mb-8">You don't have any badges to mint right now. Keep playing to earn more!</p>
+        <div className="text-2xl md:text-4xl font-satoshi text-white mb-4">No Badge To Mint</div>
+        <p className="text-white/70 mb-8">It seems there was an issue finding the badge you earned.</p>
         <button
           onClick={() => navigate("/play")}
           className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-satoshi"
         >
-          Play Game
+          Play Another Game
         </button>
       </div>
     );
@@ -98,25 +133,16 @@ function BadgeMintContent() {
         {/* Badge Card */}
         <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6">
           <div className="text-center">
-            {/* Badge Icon/Image Placeholder */}
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center">
-              <span className="text-3xl">🏆</span>
-            </div>
-            
-            {/* Badge Name */}
+            <img src={gameBadge.imageUrl} alt={gameBadge.name || 'Badge'} className="w-24 h-24 rounded-full mx-auto mb-4" />
             <h2 className="text-2xl font-satoshi text-white mb-2">
-              {selectedBadge.name || "Achievement Badge"}
+              {gameBadge.name || "Achievement Badge"}
             </h2>
-            
-            {/* Badge Description */}
             <p className="text-white/70 mb-4">
-              {selectedBadge.description || "You've completed a challenge and earned this badge!"}
+              {gameBadge.description || "You've completed a challenge and earned this badge!"}
             </p>
-            
-            {/* Category */}
-            {selectedBadge.category && (
+            {gameBadge.category && (
               <div className="inline-block bg-white/20 px-3 py-1 rounded-full text-sm text-white/80 mb-4">
-                {selectedBadge.category.name}
+                {gameBadge.category.name}
               </div>
             )}
           </div>
@@ -134,48 +160,42 @@ function BadgeMintContent() {
               : "bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
           }`}
         >
-          {mintStatus === "minting" && (
-            <div className="flex items-center justify-center gap-2">
-              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-              Minting...
-            </div>
-          )}
-          {mintStatus === "success" && (
-            <div className="flex items-center justify-center gap-2">
-              <CheckCircleIcon className="w-6 h-6" />
-              Badge Minted!
-            </div>
-          )}
-          {mintStatus === "error" && (
-            <div className="flex items-center justify-center gap-2">
-              <XCircleIcon className="w-6 h-6" />
-              Try Again
-            </div>
-          )}
+          {mintStatus === "minting" && "Minting..."}
+          {mintStatus === "success" && "Badge(s) Minted!"}
+          {mintStatus === "error" && "Try Again"}
           {mintStatus === "idle" && "Mint Badge"}
         </button>
 
-        {/* Error Message */}
+        {/* Status Messages */}
         {mintStatus === "error" && errorMessage && (
-          <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg">
+          <div className="mt-4 p-3 bg-red-500/20 border border-red-500/30 rounded-lg text-center">
             <p className="text-red-400 text-sm">{errorMessage}</p>
           </div>
         )}
-
-        {/* Success Message */}
         {mintStatus === "success" && (
-          <div className="mt-4 p-3 bg-green-500/20 border border-green-500/30 rounded-lg">
-            <p className="text-green-400 text-sm">Badge successfully minted! Redirecting to badges page...</p>
+          <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg text-center flex flex-col items-center">
+            <p className="text-green-400 text-sm">Game badge minted successfully!</p>
+            {streakBadge && (
+              <p className="text-green-400 text-sm mt-2">
+                You also unlocked the <span className="font-bold">{streakBadge.name}</span> badge!
+              </p>
+            )}
+             <button
+              onClick={() => {
+                const badgeName = gameBadge.name;
+                const text = `I just minted the "${badgeName}" badge on Geoid!`;
+                const url = "https://mini-geo-guesser-a8hd.vercel.app/";
+                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
+                  text,
+                )}&embeds[]=${encodeURIComponent(url)}`;
+                window.open(shareUrl, "_blank");
+              }}
+              className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg"
+            >
+              Share on Farcaster
+            </button>
           </div>
         )}
-
-        {/* Back Button */}
-        <button
-          onClick={() => navigate("/badges")}
-          className="w-full mt-4 py-3 px-6 bg-white/10 hover:bg-white/20 text-white rounded-xl font-satoshi transition-colors"
-        >
-          View All Badges
-        </button>
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 import AppLayout from "../layout/AppLayout";
 import { Link } from "react-router-dom";
-import worldMapImage from "../assets/globe.png";
+import newGameImage from "../assets/new_game.png";
+import locationQuizImage from "../assets/location_quiz.png";
+import mintBadgeImage from "../assets/mint_badge.png";
 
 interface StepProps {
   number: number;
@@ -37,19 +39,20 @@ export default function HowToPlay() {
     {
       title: "Start a New Game",
       description:
-        "Begin by clicking the 'Play' button. A random location image will be displayed on your screen.",
-      image: worldMapImage,
+        "Begin by clicking the 'Play' button. A random Street View location will appear. Pan around to find clues!",
+      image: newGameImage,
     },
     {
-      title: "Location Quiz",
+      title: "Guess the Location & Answer a Quiz",
       description:
-        "After making your guess, you'll be presented with a 3-question multiple choice quiz about the location. Test your knowledge about the local culture, geography, and interesting facts!",
+        "Drop a pin on the world map to guess the location. Afterwards, test your knowledge with a 3-question quiz about the area!",
+      image: locationQuizImage,
     },
     {
-      title: "See Your Score & Earn Badges",
+      title: "See Your Score & Mint Your Badge",
       description:
-        "Your score is based on how close your guess was and your quiz performance. Earn badges for your achievements!",
-      image: "https://i.ibb.co/bXk1M0b/image.png",
+        "Your final score is based on how close your guess was. You'll also get to mint a unique badge for completing the game!",
+      image: mintBadgeImage,
     },
   ];
 
@@ -65,7 +68,7 @@ export default function HowToPlay() {
         </div>
 
         {/* Content Section */}
-        <div className="relative z-10 rounded-t-3xl mt-12 pt-12 pb-24">
+        <div className="relative z-10 rounded-t-3xl mt-12 pt-12 ">
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             {steps.map((step, index) => (
               <Step key={index} number={index + 1} {...step} />

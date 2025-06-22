@@ -8,7 +8,6 @@ import Play from "./pages/Play";
 import Leaderboard from "./pages/Leaderboard";
 import Badges from "./pages/Badges";
 import History from "./pages/History";
-import Profile from "./pages/Profile";
 import BadgeMint from "./pages/BadgeMint";
 import QueryClientProvider from "./providers/QueryClientProvider";
 
@@ -26,7 +25,6 @@ function App() {
         <Route path="/badges" element={<Badges />} />
         <Route path="/play" element={<Play />} />
         <Route path="/history" element={<History />} />
-        <Route path="/profile" element={<Profile />} />
           <Route path="/how-to-play" element={<HowToPlay />} />
           <Route path="/badge-mint" element={<BadgeMint />} />
         </Routes>

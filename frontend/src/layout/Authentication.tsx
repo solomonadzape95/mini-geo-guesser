@@ -25,7 +25,7 @@ export function Authentication() {
   return (
     <div>
       <h1>Welcome, {user.fid}</h1>
-      {/* render your GeoGuessr game here */}
+      {/* render your Geoid game here */}
     </div>
   );
 }

@@ -5,6 +5,8 @@ interface User {
   fid: number;
   primaryAddress?: string;
   profileId?: number;
+  username?: string;
+  pfpUrl?: string;
 }
 
 interface AuthContextType {

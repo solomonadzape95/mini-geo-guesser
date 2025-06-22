@@ -94,8 +94,8 @@ function HistoryContent() {
 export default function History() {
   return (
     <AppLayout>
-      <div className="w-full min-h-screen py-8 px-4 md:px-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="w-full min-h-screen my-auto px-4 md:px-8">
+        <div className="max-w-4xl mx-auto mt-8">
           <h1 className="text-3xl md:text-4xl font-satoshi text-white mb-8 text-center">
             Game History
           </h1>

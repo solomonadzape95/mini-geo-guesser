@@ -3,14 +3,15 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import MapModal from "../components/MapModal";
 import Quiz from "../components/Quiz";
-import ResultMap from "../components/ResultMap";
+import GoogleResultMap from "../components/GoogleResultMap";
+import StreetView from "../components/StreetView";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { usePlayGameQuery } from "../hooks/useGames";
 import { SkeletonCard } from "../components/Skeleton";
-import globeImg from "../assets/globe.png";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { saveGameResult } from "../services/auth";
+import { useGoogleMaps } from "../hooks/useGoogleMaps";
 
 interface Location {
   lat: number;
@@ -36,7 +37,7 @@ const calculateDistance = (loc1: Location, loc2: Location): number => {
 const calculateScore = (distance: number): number => {
   // Max distance on Earth is roughly 20,000km, so we scale accordingly
   const maxDistance = 20000;
-  const score = Math.max(0, 5000 - (distance / maxDistance) * 5000);
+  const score = 5000 * Math.exp(-10 * (distance / maxDistance));
   return Math.round(score);
 };
 
@@ -55,6 +56,10 @@ function PlayContent() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: gameData, isLoading, error } = usePlayGameQuery();
+  
+  // Get Google Maps API key from environment
+  const apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
+  const { isLoaded: mapsLoaded, calculateDistance: googleCalculateDistance } = useGoogleMaps({ apiKey });
   
   const [gameState, setGameState] = useState<
     "loading" | "ready" | "playing" | "results-map" | "quiz"
@@ -137,7 +142,9 @@ function PlayContent() {
 
         // Calculate score if user made a guess
         if (userGuess && actualLocation) {
-          const dist = calculateDistance(userGuess, actualLocation);
+          const dist = mapsLoaded && googleCalculateDistance ? 
+            googleCalculateDistance(userGuess, actualLocation) : 
+            calculateDistance(userGuess, actualLocation);
           const finalScore = calculateScore(dist);
           setDistance(dist);
           setScore(finalScore);
@@ -149,7 +156,7 @@ function PlayContent() {
     }, 100);
 
     return () => clearInterval(interval);
-  }, [gameState, gameStartTime, userGuess, actualLocation]);
+  }, [gameState, gameStartTime, userGuess, actualLocation, mapsLoaded, googleCalculateDistance]);
 
   const handleMapClick = (location: Location) => {
     setUserGuess(location);
@@ -160,7 +167,9 @@ function PlayContent() {
     setGameState("results-map");
     localStorage.removeItem("challengeStartTime");
     if (userGuess && actualLocation) {
-      const dist = calculateDistance(userGuess, actualLocation);
+      const dist = mapsLoaded && googleCalculateDistance ? 
+        googleCalculateDistance(userGuess, actualLocation) : 
+        calculateDistance(userGuess, actualLocation);
       const finalScore = calculateScore(dist);
       setDistance(dist);
       setScore(finalScore);
@@ -186,7 +195,7 @@ function PlayContent() {
         setIsSaving(false);
       }
     }
-    navigate("/badge-mint");
+    navigate("/badge-mint", { state: { badgeId: gameData?.game.badgeID } });
   };
 
   // Loading state
@@ -235,24 +244,21 @@ function PlayContent() {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-start py-4 px-2 md:px-0 gap-6">
-      {/* Main Image Section - Only show during playing state */}
-      {gameState === "playing" && (
+      {/* Street View Section - Only show during playing state */}
+      {gameState === "playing" && actualLocation && (
         <div className="w-full flex justify-center">
-          <img
-            src={globeImg}
-            alt="Guess the location"
-            className="max-w-full max-h-[20vh] md:max-h-[50vh] rounded-xl object-contain"
-            style={{ margin: "0 auto" }}
-          />
+          <div className="w-full max-w-4xl h-[40vh] md:h-[50vh] rounded-xl overflow-hidden">
+            <StreetView location={actualLocation} />
+          </div>
         </div>
       )}
 
       {/* Ready to Start Section */}
       {gameState === "ready" && (
-        <section className="w-full flex flex-col items-center justify-center py-8">
+        <section className="w-full flex flex-col items-center justify-center py-8 my-auto">
           <div className="text-3xl md:text-5xl font-satoshi text-white mb-6">Ready to Start?</div>
           <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">
-            You'll have 120 seconds to guess the location. Click the map to make your guess!
+            You'll have 120 seconds to explore the Street View and guess the location. Click the map to make your guess!
           </p>
           <button
             onClick={startGame}
@@ -296,40 +302,86 @@ function PlayContent() {
 
       {/* Results Map Section */}
       {gameState === "results-map" && actualLocation && (
-        <section className="w-full flex flex-col items-center justify-center pb-8 md:py-8">
+        <section className="w-full flex flex-col items-center justify-center pb-8 md:py-8 my-auto">
           {userGuess ? (
             <div className="flex flex-col items-center justify-center w-[90vw]">
               <div className="relative w-10/12 h-[60vh] rounded-2xl overflow-hidden border-2 border-white/20">
-                <ResultMap userGuess={userGuess} actualLocation={actualLocation} />
+                <GoogleResultMap
+                  userGuess={userGuess}
+                  actualLocation={actualLocation}
+                />
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 w-11/12 max-w-md text-center border border-white/20 mt-4">
-                <h2 className="text-2xl font-satoshi text-white mb-2">Results</h2>
-                <div className="text-4xl font-satoshi text-blue-400 mb-1">{score || 0}</div>
-                <div className="text-md text-white/80">out of 5,000 points</div>
+                <h2 className="text-2xl font-satoshi text-white mb-2">
+                  Results
+                </h2>
+                <div className="text-4xl font-satoshi text-blue-400 mb-1">
+                  {score || 0}
+                </div>
+                <div className="text-md text-white/80">
+                  out of 5,000 points
+                </div>
                 {distance !== null && (
-                  <div className="text-white/70 mt-2">You were {Math.round(distance)} km away</div>
+                  <div className="text-white/70 mt-2">
+                    You were {Math.round(distance)} km away
+                  </div>
                 )}
-                <button
-                  onClick={() => setGameState("quiz")}
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-satoshi transition-colors mt-4"
-                >
-                  Continue to Quiz
-                </button>
+                <div className="text-white/70 mt-2">
+                  <div className="font-medium">
+                    Location: {gameData?.game.name || "Unknown Location"}
+                  </div>
+                  <div className="text-xs text-white/50 mt-1">
+                    {actualLocation
+                      ? `${actualLocation.lat.toFixed(
+                          4,
+                        )}, ${actualLocation.lng.toFixed(4)}`
+                      : ""}
+                  </div>
+                </div>
+                <div className="flex justify-center space-x-4 mt-4">
+                  <button
+                    onClick={() => setGameState("quiz")}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full font-satoshi transition-colors"
+                  >
+                    Continue to Quiz
+                  </button>
+                  {score !== null && (
+                    <button
+                      onClick={() => {
+                        const text = `I scored ${score} points in today's Geoid challenge!`;
+                        const url = "https://mini-geo-guesser-a8hd.vercel.app/";
+                        const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
+                          text,
+                        )}&embeds[]=${encodeURIComponent(url)}`;
+                        window.open(shareUrl, "_blank");
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-6 rounded-lg"
+                    >
+                      Share Score
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           ) : (
-            <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-md w-full text-center border border-white/20">
-              <h2 className="text-3xl md:text-4xl font-satoshi text-white mb-6">Time's Up!</h2>
+            <div className="my-auto bg-white/10 backdrop-blur-md rounded-2xl p-6 md:p-8 max-w-md w-full text-center border border-white/20">
+              <h2 className="text-3xl md:text-4xl font-satoshi text-white mb-6">
+                Time's Up!
+              </h2>
               <div className="text-red-400 mb-6">No guess was made</div>
               <div className="mb-6">
-                <div className="text-5xl md:text-6xl font-satoshi text-blue-400 mb-2">0</div>
-                <div className="text-lg text-white/80">out of 5,000 points</div>
+                <div className="text-5xl md:text-6xl font-satoshi text-blue-400 mb-2">
+                  0
+                </div>
+                <div className="text-lg text-white/80">
+                  out of 5,000 points
+                </div>
               </div>
               <button
-                onClick={() => setGameState("quiz")}
+                onClick={() => setGameState("ready")}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors mt-2"
               >
-                Continue to Quiz
+                Retry Game
               </button>
             </div>
           )}

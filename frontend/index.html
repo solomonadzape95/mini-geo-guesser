@@ -3,7 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Geoid - Daily Geography Challenge</title>
+    
+    <!-- Meta tags for social sharing -->
+    <meta name="description" content="Test your geography skills with daily challenges on Geoid. Guess locations, earn badges, and compete on the leaderboard!" />
+    <meta name="keywords" content="geography, challenge, game, location, guess, daily, geoid" />
+    <meta name="author" content="Geoid" />
+    
+    <!-- Open Graph tags -->
+    <meta property="og:title" content="Geoid - Daily Geography Challenge" />
+    <meta property="og:description" content="Test your geography skills with daily challenges on Geoid. Guess locations, earn badges, and compete on the leaderboard!" />
+    <meta property="og:image" content="https://mini-geo-guesser-a8hd.vercel.app/globe.png" />
+    <meta property="og:url" content="https://mini-geo-guesser-a8hd.vercel.app/" />
+    <meta property="og:type" content="website" />
+    
+    <!-- Twitter Card tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Geoid - Daily Geography Challenge" />
+    <meta name="twitter:description" content="Test your geography skills with daily challenges on Geoid. Guess locations, earn badges, and compete on the leaderboard!" />
+    <meta name="twitter:image" content="https://mini-geo-guesser-a8hd.vercel.app/globe.png" />
+    
+    <!-- Farcaster Frame tags -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://mini-geo-guesser-a8hd.vercel.app/globe.png" />
+    <meta property="fc:frame:button:1" content="Start Geoid" />
+    <meta property="fc:frame:post_url" content="https://mini-geo-guesser-a8hd.vercel.app/" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/globe.png" />
+    <link rel="apple-touch-icon" href="/globe.png" />
+    
+    <!-- Preconnect to external domains -->
     <link rel="preconnect" href="https://auth.farcaster.xyz" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- External CSS -->
     <link
       href="https://unpkg.com/mapillary-js@4.1.2/dist/mapillary.css"
       rel="stylesheet"
@@ -11,11 +46,11 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
      crossorigin=""/>
-     <!-- Make sure you put this AFTER Leaflet's CSS -->
- <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
- integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
- crossorigin=""></script>
-    <title>Create Mini App</title>
+     
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
   </head>
   <body>
     <div id="root"></div>

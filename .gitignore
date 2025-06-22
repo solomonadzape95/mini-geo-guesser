@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 *.env
+.env
+frontend/.env
+backend/.env
 frontend/types.ts
 frontend/.env
 backend/.env

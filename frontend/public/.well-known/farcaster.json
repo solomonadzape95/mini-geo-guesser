@@ -1,12 +1,12 @@
 {
     "frame": {
       "version": "1",
-      "name": "Mini GeoGuessr",
-      "iconUrl": "https://mini-geo-guessr.vercel.app/logo.png",
-      "homeUrl": "https://mini-geo-guessr.vercel.app/",
-      "imageUrl": "https://mini-geo-guessr.vercel.app/opengraph-image",
-      "buttonTitle": "🚩 Start",
-      "splashImageUrl": "https://mini-geo-guessr.vercel.app/logo.png",
+      "name": "Geoid",
+      "iconUrl": "https://mini-geo-guesser-a8hd.vercel.app/globe.png",
+      "homeUrl": "https://mini-geo-guesser-a8hd.vercel.app/",
+      "imageUrl": "https://mini-geo-guesser-a8hd.vercel.app/globe.png",
+      "buttonTitle": "Start Geoid",
+      "splashImageUrl": "https://mini-geo-guesser-a8hd.vercel.app/globe.png",
       "splashBackgroundColor": "#000000",
       "requiredChains": [
         "eip155:1"
