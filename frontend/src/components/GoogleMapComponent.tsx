@@ -17,8 +17,8 @@ export default function GoogleMapComponent({
   className = "" 
 }: GoogleMapComponentProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
+  const mapInstanceRef = useRef<any | null>(null);
+  const markerRef = useRef<any | null>(null);
 
   useEffect(() => {
     if (!window.google || !window.google.maps || !mapRef.current) {
@@ -51,7 +51,7 @@ export default function GoogleMapComponent({
     markerRef.current = marker;
 
     // Add click listener to map
-    const clickListener = map.addListener('click', (event: google.maps.MapMouseEvent) => {
+    const clickListener = map.addListener('click', (event: any) => {
       if (event.latLng) {
         const newLocation = {
           lat: event.latLng.lat(),

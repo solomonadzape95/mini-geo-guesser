@@ -17,10 +17,10 @@ export default function GoogleResultMap({
   className = "" 
 }: GoogleResultMapProps) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<google.maps.Map | null>(null);
-  const userMarkerRef = useRef<google.maps.Marker | null>(null);
-  const actualMarkerRef = useRef<google.maps.Marker | null>(null);
-  const polylineRef = useRef<google.maps.Polyline | null>(null);
+  const mapInstanceRef = useRef<any | null>(null);
+  const userMarkerRef = useRef<any | null>(null);
+  const actualMarkerRef = useRef<any | null>(null);
+  const polylineRef = useRef<any | null>(null);
 
   useEffect(() => {
     if (!window.google || !window.google.maps || !mapRef.current) {

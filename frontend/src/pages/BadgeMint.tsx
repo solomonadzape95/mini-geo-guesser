@@ -3,8 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import { useBadgesQuery, useMintBadge, useUserProfile } from "../hooks/useBadges";
 import { SkeletonCard } from "../components/Skeleton";
-import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
-import { BadgeWithCategory, Badge } from "../types";
+import { BadgeWithCategory } from "../types";
 
 const STREAK_BADGES: { [key: number]: string } = {
   1: "1-Day Streak",
@@ -23,7 +22,7 @@ function BadgeMintContent() {
   const { badgeId: gameBadgeId } = location.state || {};
   
   const { data: badges, isLoading: isLoadingBadges, error: badgesError } = useBadgesQuery();
-  const { data: userProfile, refetch: refetchProfile } = useUserProfile();
+  const { refetch: refetchProfile } = useUserProfile();
   const mintBadgeMutation = useMintBadge();
   
   const [gameBadge, setGameBadge] = useState<BadgeWithCategory | null>(null);

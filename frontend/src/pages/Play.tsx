@@ -7,7 +7,6 @@ import GoogleResultMap from "../components/GoogleResultMap";
 import StreetView from "../components/StreetView";
 import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { usePlayGameQuery } from "../hooks/useGames";
-import { SkeletonCard } from "../components/Skeleton";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { saveGameResult } from "../services/auth";
