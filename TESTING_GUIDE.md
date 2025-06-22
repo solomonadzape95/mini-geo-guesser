@@ -92,20 +92,64 @@ User: { fid: 12345, primaryAddress: "0x...", profileId: 1 }
 FID: 12345
 Profile ID: 1
 Address: 0x12345678...
+Streak: 3 🔥
+Last Sign In: 12/15/2024, 2:30:45 PM
+Games Played: 5
+Badges Claimed: 2/8
 
 API Test Results:
 ✅ profile
 ✅ history  
 ✅ badges
 ✅ saveGame
+  New Streak: 4 🔥
 ```
 
 ### **Step 4: Database Verification**
 
 1. **Open Supabase Dashboard**
 2. **Go to Table Editor**
-3. **Check the `profiles` table** - should see your user
+3. **Check the `profiles` table** - should see your user with `lastSignIn` and `streak`
 4. **Check the `user_games` table** - should see test game result
+5. **Check the `user_badges` table** - should see claimed badges
+
+## 🆕 New Features Testing
+
+### **Streak Calculation Testing**
+
+1. **Play multiple games on consecutive days**
+2. **Check streak updates** in AuthDebugger
+3. **Verify streak calculation** in database
+
+```javascript
+// Test streak calculation
+const profile = await getUserProfile();
+console.log('Current streak:', profile.streak);
+
+// Play a game
+const result = await saveGameResult({ gameId: 1, score: 3500 });
+console.log('New streak:', result.newStreak);
+```
+
+### **Badge Claiming Testing**
+
+1. **Check badge claimed status** in AuthDebugger
+2. **Verify claimed badges** show ✅, unclaimed show ❌
+3. **Test badge claiming** functionality
+
+```javascript
+// Test badge status
+const badges = await getUserBadges();
+badges.badges.forEach(badge => {
+  console.log(`${badge.claimed ? '✅' : '❌'} ${badge.name}`);
+});
+```
+
+### **Last Sign In Testing**
+
+1. **Authenticate multiple times**
+2. **Check lastSignIn updates** in AuthDebugger
+3. **Verify timestamp** is current
 
 ## 🛠️ Manual Testing
 
@@ -145,10 +189,10 @@ for (const endpoint of endpoints) {
 }
 ```
 
-### **Test 3: Game Save**
+### **Test 3: Game Save with Streak**
 
 ```javascript
-// Test saving a game result
+// Test saving a game result and streak update
 const gameResult = {
   gameId: 1,
   score: 3500
@@ -160,7 +204,9 @@ const saveRes = await sdk.quickAuth.fetch('http://localhost:8787/games/save', {
   body: JSON.stringify(gameResult)
 });
 
-console.log('Save result:', await saveRes.json());
+const result = await saveRes.json();
+console.log('Save result:', result);
+console.log('New streak:', result.newStreak);
 ```
 
 ## 🔒 Security Testing
@@ -232,6 +278,18 @@ console.log('Invalid token response:', invalidRes.status); // Should be 401
 3. Verify table structure
 4. Check RLS policies
 
+### **Issue 4: Streak Not Updating**
+
+**Symptoms:**
+- Streak stays at 0
+- Streak calculation incorrect
+
+**Solutions:**
+1. Check games table has proper date fields
+2. Verify streak calculation logic
+3. Check user_games table structure
+4. Ensure games are saved with correct gameId
+
 ## 📊 Testing Checklist
 
 ### **Backend Tests**
@@ -240,6 +298,9 @@ console.log('Invalid token response:', invalidRes.status); // Should be 401
 - [ ] JWT validation works
 - [ ] User profile creation works
 - [ ] API endpoints respond correctly
+- [ ] Streak calculation works
+- [ ] Badge claiming status correct
+- [ ] LastSignIn updates properly
 
 ### **Frontend Tests**
 - [ ] Authentication happens automatically
@@ -247,12 +308,16 @@ console.log('Invalid token response:', invalidRes.status); // Should be 401
 - [ ] API calls work with authentication
 - [ ] Error handling works
 - [ ] Loading states work
+- [ ] Streak display updates
+- [ ] Badge status shows correctly
 
 ### **Database Tests**
 - [ ] User profiles created automatically
 - [ ] RLS policies enforce isolation
 - [ ] Game results saved correctly
 - [ ] Data queries work properly
+- [ ] Streak calculation accurate
+- [ ] Badge claiming works
 
 ### **Security Tests**
 - [ ] Users can't access other users' data
@@ -282,6 +347,8 @@ VITE_BACKEND_URL=https://your-backend.workers.dev
 2. **Test with real Farcaster accounts**
 3. **Verify all functionality works**
 4. **Check performance and error rates**
+5. **Test streak calculation over multiple days**
+6. **Verify badge claiming in production**
 
 ## 📝 Test Results Template
 
@@ -295,6 +362,9 @@ Profile Creation: ✅/❌
 API Endpoints: ✅/❌
 RLS Policies: ✅/❌
 Game Save: ✅/❌
+Streak Calculation: ✅/❌
+Badge Claiming: ✅/❌
+LastSignIn Updates: ✅/❌
 Error Handling: ✅/❌
 
 Issues Found:
@@ -315,5 +385,7 @@ If you encounter issues:
 3. **Test with the AuthDebugger component**
 4. **Check the AUTH_SETUP.md** for configuration details
 5. **Review the backend logs** for server-side errors
+6. **Verify database migrations** are applied
+7. **Check streak calculation** logic
 
 The authentication system should work seamlessly once properly configured! 

@@ -8,6 +8,7 @@ import { MapIcon, PlayIcon } from "@heroicons/react/24/outline";
 import { usePlayGameQuery } from "../hooks/useGames";
 import { SkeletonCard } from "../components/Skeleton";
 import globeImg from "../assets/globe.png";
+import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { saveGameResult } from "../services/auth";
 
@@ -193,7 +194,9 @@ function PlayContent() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
         <div className="text-4xl md:text-6xl font-satoshi text-white animate-pulse mb-8">Loading Game...</div>
-        <SkeletonCard className="max-w-md" />
+        <div className="flex items-center justify-center">
+          <img src={infiniteSpinner} alt="Loading" className="w-16 h-16" />
+        </div>
       </div>
     );
   }
@@ -232,8 +235,8 @@ function PlayContent() {
 
   return (
     <div className="w-full min-h-screen flex flex-col items-center justify-start py-4 px-2 md:px-0 gap-6">
-      {/* Main Image Section */}
-      {gameState !== "results-map" && gameState !== "quiz" && (
+      {/* Main Image Section - Only show during playing state */}
+      {gameState === "playing" && (
         <div className="w-full flex justify-center">
           <img
             src={globeImg}
@@ -251,9 +254,6 @@ function PlayContent() {
           <p className="text-lg md:text-xl text-white/80 mb-8 max-w-md text-center">
             You'll have 120 seconds to guess the location. Click the map to make your guess!
           </p>
-          {/* {gameData.game.name && (
-            <p className="text-white/60 mb-4">Today's Challenge: {gameData.game.name}</p>
-          )} */}
           <button
             onClick={startGame}
             className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-full text-xl font-satoshi flex items-center gap-3 mx-auto transition-colors shadow-md"
@@ -382,7 +382,9 @@ function PlayContent() {
       {isSaving && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60">
           <div className="bg-white rounded-xl p-8 max-w-sm w-full shadow-lg text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+            <div className="flex items-center justify-center mb-4">
+              <img src={infiniteSpinner} alt="Saving" className="w-12 h-12" />
+            </div>
             <p className="text-gray-700">Saving your game result...</p>
           </div>
         </div>
@@ -397,7 +399,9 @@ export default function Play() {
       <Suspense fallback={
         <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
           <div className="text-4xl md:text-6xl font-satoshi text-white animate-pulse mb-8">Loading Game...</div>
-          <SkeletonCard className="max-w-md" />
+          <div className="flex items-center justify-center">
+            <img src={infiniteSpinner} alt="Loading" className="w-16 h-16" />
+          </div>
         </div>
       }>
         <PlayContent />

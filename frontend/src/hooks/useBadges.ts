@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBadgesWithCategories, getBadgesByCategory, getCategories } from '../services/badges';
+import { mintBadge } from "../services/auth";
 // import { BadgeWithCategory } from '../types';
 
 // Query keys
@@ -63,4 +64,16 @@ export function useCategoriesQuery() {
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 30 * 60 * 1000, // 30 minutes
   });
-} 
+}
+
+export const useMintBadge = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: mintBadge,
+    onSuccess: () => {
+      // Invalidate and refetch badges after minting
+      queryClient.invalidateQueries({ queryKey: ["badges"] });
+    },
+  });
+}; 

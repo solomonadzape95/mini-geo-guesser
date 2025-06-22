@@ -1,6 +1,6 @@
 import { sdk } from "@farcaster/frame-sdk";
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://bc09-102-90-103-110.ngrok-free.app';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://your-backend.miniapps.farcaster.xyz';
 
 export interface User {
   fid: number;
@@ -12,13 +12,30 @@ export interface UserProfile {
   fid: number;
   primaryAddress?: string;
   profileId?: number;
+  lastSignIn?: string;
+  streak: number;
   games: any[];
-  badges: any[];
+  badges: Badge[];
+}
+
+export interface Badge {
+  id: number;
+  name: string | null;
+  description: string | null;
+  category: number | null;
+  locked: boolean | null;
+  claimed: boolean;
 }
 
 export interface GameResult {
   gameId: number;
   score: number;
+}
+
+export interface SaveGameResponse {
+  success: boolean;
+  gameResult: any;
+  newStreak: number;
 }
 
 // Get current user
@@ -40,7 +57,7 @@ export const getUserProfile = async (): Promise<UserProfile> => {
 };
 
 // Save game result
-export const saveGameResult = async (gameResult: GameResult): Promise<any> => {
+export const saveGameResult = async (gameResult: GameResult): Promise<SaveGameResponse> => {
   const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/games/save`, {
     method: 'POST',
     headers: {
@@ -64,11 +81,29 @@ export const getGameHistory = async (): Promise<any> => {
   return res.json();
 };
 
-// Get user's badges
-export const getUserBadges = async (): Promise<any> => {
+// Get user's badges with claimed status
+export const getUserBadges = async (): Promise<{ badges: Badge[] }> => {
   const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/badges`);
   if (!res.ok) {
     throw new Error('Failed to get user badges');
   }
+  return res.json();
+};
+
+// Mint a badge
+export const mintBadge = async (badgeId: number): Promise<{ success: boolean; badge: any }> => {
+  const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/badges/mint`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ badgeId }),
+  });
+  
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.message || 'Failed to mint badge');
+  }
+  
   return res.json();
 }; 

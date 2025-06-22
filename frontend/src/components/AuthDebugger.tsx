@@ -6,6 +6,7 @@ export default function AuthDebugger() {
   const { user, isLoading, error } = useAuth();
   const [debugInfo, setDebugInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [profileData, setProfileData] = useState<any>(null);
 
   const testEndpoints = async () => {
     setLoading(true);
@@ -16,6 +17,7 @@ export default function AuthDebugger() {
       try {
         const profile = await getUserProfile();
         results.profile = { success: true, data: profile };
+        setProfileData(profile);
       } catch (err) {
         results.profile = { success: false, error: err };
       }
@@ -73,6 +75,14 @@ export default function AuthDebugger() {
         {user.primaryAddress && (
           <p className="text-sm">Address: {user.primaryAddress.slice(0, 10)}...</p>
         )}
+        {profileData && (
+          <>
+            <p className="text-sm">Streak: {profileData.streak} 🔥</p>
+            <p className="text-sm">Last Sign In: {new Date(profileData.lastSignIn).toLocaleString()}</p>
+            <p className="text-sm">Games Played: {profileData.games.length}</p>
+            <p className="text-sm">Badges Claimed: {profileData.badges.filter((b: any) => b.claimed).length}/{profileData.badges.length}</p>
+          </>
+        )}
       </div>
 
       <button
@@ -96,8 +106,27 @@ export default function AuthDebugger() {
                   {result.error?.message || 'Unknown error'}
                 </div>
               )}
+              {result.success && endpoint === 'saveGame' && (
+                <div className="text-green-200 ml-2">
+                  New Streak: {result.data.newStreak} 🔥
+                </div>
+              )}
             </div>
           ))}
+        </div>
+      )}
+
+      {profileData && (
+        <div className="text-xs mt-2">
+          <h4 className="font-bold mb-1">Badges:</h4>
+          {profileData.badges.slice(0, 3).map((badge: any) => (
+            <div key={badge.id} className="ml-2">
+              {badge.claimed ? '✅' : '❌'} {badge.name || 'Unknown Badge'}
+            </div>
+          ))}
+          {profileData.badges.length > 3 && (
+            <div className="ml-2 text-gray-300">... and {profileData.badges.length - 3} more</div>
+          )}
         </div>
       )}
     </div>
