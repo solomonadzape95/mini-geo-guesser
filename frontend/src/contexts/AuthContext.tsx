@@ -35,13 +35,17 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [user, setUser] = useState<User | null>(() => {
+    const stored = localStorage.getItem('geoid_user');
+    return stored ? JSON.parse(stored) : null;
+  });
+  const [isLoading, setIsLoading] = useState(user === null);
   const [error, setError] = useState<string | null>(null);
 
   const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mini-geo-guessr-auth-production.geoid.workers.dev';
 
   useEffect(() => {
+    if (user) return; // Already loaded from localStorage
     const authenticateUser = async () => {
       try {
         setIsLoading(true);
@@ -60,6 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         if (contextUser) {
           setUser(contextUser);
+          localStorage.setItem('geoid_user', JSON.stringify(contextUser));
           sdk.actions.ready();
         } else {
           // Fallback: Use Quick Auth to get authenticated user from backend
@@ -67,6 +72,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (res.ok) {
             const userInfo = await res.json();
             setUser(userInfo);
+            localStorage.setItem('geoid_user', JSON.stringify(userInfo));
             sdk.actions.ready();
           } else {
             console.error('Authentication failed:', res.status, res.statusText);
@@ -82,11 +88,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     authenticateUser();
-  }, [BACKEND_URL]);
+  }, [BACKEND_URL, user]);
 
   const logout = () => {
     setUser(null);
     setError(null);
+    localStorage.removeItem('geoid_user');
     // You might want to clear any stored tokens here
   };
 

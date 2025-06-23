@@ -11,6 +11,8 @@ import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { useAuth } from "../contexts/AuthContext";
 import { saveGameResult } from "../services/auth";
 import { useGoogleMaps } from "../hooks/useGoogleMaps";
+import { saveTodayGameResult } from "../hooks/useGames";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Location {
   lat: number;
@@ -71,6 +73,7 @@ function PlayContent() {
   const [gameStartTime, setGameStartTime] = useState<number | null>(null);
   const [showLockModal, setShowLockModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
 
   // Get actual location from game data
   const actualLocation = gameData?.game.coords ? parseCoordinates(gameData.game.coords) : null;
@@ -187,6 +190,14 @@ function PlayContent() {
           gameId: gameData.game.id,
           score: score
         });
+        // Save today's game result in localStorage for home page
+        saveTodayGameResult({
+          score,
+          locationName: gameData?.game.name,
+          date: gameData?.game.date,
+        });
+        // Invalidate today's game query
+        queryClient.invalidateQueries({ queryKey: ["games", "today"] });
       } catch (error) {
         console.error('Failed to save game result:', error);
         // Continue to badge mint even if save fails

@@ -85,4 +85,18 @@ export function useSaveGameResultMutation() {
       // You might also want to invalidate history queries here
     },
   });
+}
+
+// Utility to persist today's game result in localStorage
+export function saveTodayGameResult(result: any) {
+  localStorage.setItem('geoid_today_game_result', JSON.stringify(result));
+}
+
+export function getTodayGameResult() {
+  const stored = localStorage.getItem('geoid_today_game_result');
+  return stored ? JSON.parse(stored) : null;
+}
+
+export function clearTodayGameResult() {
+  localStorage.removeItem('geoid_today_game_result');
 } 
