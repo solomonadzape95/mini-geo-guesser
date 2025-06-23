@@ -1,4 +1,5 @@
 import { sdk } from "@farcaster/frame-sdk";
+import { supabase } from "../config/supabaseClient";
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://your-backend.miniapps.farcaster.xyz';
 
@@ -99,4 +100,19 @@ export const mintBadge = async (badgeId: number): Promise<{ success: boolean; ba
   }
   
   return res.json();
+};
+
+// Upsert user profile (username and pfp) in Supabase
+export const upsertUserProfile = async ({ fid, username, pfpUrl }: { fid: string; username?: string | null; pfpUrl?: string | null }) => {
+  if (!fid) return;
+  // Only update username/pfp if provided, do not overwrite with null
+  const updateObj: any = {
+    fid: String(fid),
+    lastSignIn: new Date().toISOString(),
+  };
+  if (username) updateObj.username = username;
+  if (pfpUrl) updateObj.pfp = pfpUrl;
+  // Only set streak: 0 on insert, not on update
+  const { error } = await supabase.from('profiles').upsert(updateObj, { onConflict: 'fid', ignoreDuplicates: false });
+  if (error) throw new Error(error.message);
 }; 

@@ -32,21 +32,19 @@ export const getDailyLeaderboard = async (): Promise<DailyLeaderboardEntry[]> =>
 
 // Supabase-based all-time leaderboard
 export const getAllTimeLeaderboardSupabase = async () => {
-  // Aggregate total score per user, join profiles for username/pfp
   const { data, error } = await supabase
     .from('user_games')
-    .select('score, userID, profiles:profiles!user_games_userID_fkey(fid, username, pfpUrl)')
+    .select('score, userID, profiles:profiles!user_games_userID_fkey(fid, username, pfp)')
     .order('score', { ascending: false });
   if (error) throw new Error(error.message);
-  // Aggregate by userID
-  const leaderboard: Record<string, { fid: string, username?: string, pfpUrl?: string, totalScore: number, gameCount: number }> = {};
+  const leaderboard: Record<string, { fid: string, username?: string, pfp?: string, totalScore: number, gameCount: number }> = {};
   (data || []).forEach((row: any) => {
     const fid = row.profiles?.fid || row.userID;
     if (!leaderboard[fid]) {
       leaderboard[fid] = {
         fid,
         username: row.profiles?.username,
-        pfpUrl: row.profiles?.pfpUrl,
+        pfp: row.profiles?.pfp,
         totalScore: 0,
         gameCount: 0,
       };
@@ -65,16 +63,15 @@ export const getDailyLeaderboardSupabase = async () => {
   tomorrow.setDate(tomorrow.getDate() + 1);
   const { data, error } = await supabase
     .from('user_games')
-    .select('score, userID, profiles:profiles!user_games_userID_fkey(fid, username, pfpUrl), created_at')
+    .select('score, userID, profiles:profiles!user_games_userID_fkey(fid, username, pfp), created_at')
     .gte('created_at', today.toISOString())
     .lt('created_at', tomorrow.toISOString())
     .order('score', { ascending: false });
   if (error) throw new Error(error.message);
-  // Map to leaderboard entries
   return (data || []).map((row: any) => ({
     fid: row.profiles?.fid || row.userID,
     username: row.profiles?.username,
-    pfpUrl: row.profiles?.pfpUrl,
+    pfp: row.profiles?.pfp,
     score: row.score,
   }));
 }; 

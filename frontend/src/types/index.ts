@@ -24,6 +24,8 @@ export interface BadgeWithCategoryAndClaimed extends BadgeWithCategory {
 
 export interface UserHistoryEntry extends UserGame {
   game: Game;
+  username?: string | null;
+  pfp?: string | null;
 }
 
 export interface TodayGameData {

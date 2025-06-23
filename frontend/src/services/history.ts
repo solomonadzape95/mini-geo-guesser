@@ -17,7 +17,8 @@ export async function getUserGameHistory(userId?: number): Promise<ApiResponse<U
       .from('user_games')
       .select(`
         *,
-        game:games(*)
+        game:games(*),
+        profile:profiles!user_games_userID_fkey(id, fid, username, pfp)
       `)
       .order('created_at', { ascending: false });
 
@@ -34,7 +35,9 @@ export async function getUserGameHistory(userId?: number): Promise<ApiResponse<U
       userID: entry.userID || userId,
       game: entry.game as Game,
       guessResult: entry.guessResult ?? null,
-      quizResult: entry.quizResult ?? null
+      quizResult: entry.quizResult ?? null,
+      username: entry.profile?.username || null,
+      pfp: entry.profile?.pfp || null,
     }));
      
 

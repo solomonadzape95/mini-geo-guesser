@@ -1,5 +1,6 @@
 import { sdk } from "@farcaster/frame-sdk";
 import { createContext, useEffect, useState, useContext } from "react";
+import { upsertUserProfile } from '../services/auth';
 
 interface User {
   fid: number;
@@ -65,6 +66,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (contextUser) {
           setUser(contextUser);
           localStorage.setItem('geoid_user', JSON.stringify(contextUser));
+          // Upsert user profile in Supabase
+          upsertUserProfile({
+            fid: String(contextUser.fid),
+            username: contextUser.username || contextUser.displayName || null,
+            pfpUrl: contextUser.pfpUrl || null,
+          });
           sdk.actions.ready();
         } else {
           // Fallback: Use Quick Auth to get authenticated user from backend
@@ -73,6 +80,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const userInfo = await res.json();
             setUser(userInfo);
             localStorage.setItem('geoid_user', JSON.stringify(userInfo));
+            // Upsert user profile in Supabase
+            upsertUserProfile({
+              fid: String(userInfo.fid),
+              username: userInfo.username || userInfo.displayName || null,
+              pfpUrl: userInfo.pfpUrl || null,
+            });
             sdk.actions.ready();
           } else {
             console.error('Authentication failed:', res.status, res.statusText);

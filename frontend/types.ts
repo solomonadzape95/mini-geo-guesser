@@ -112,21 +112,27 @@ export type Database = {
           fid: string
           id: number
           lastSignIn: string
+          pfp: string | null
           streak: number
+          username: string | null
         }
         Insert: {
           created_at?: string
           fid: string
           id?: number
           lastSignIn: string
+          pfp?: string | null
           streak: number
+          username?: string | null
         }
         Update: {
           created_at?: string
           fid?: string
           id?: number
           lastSignIn?: string
+          pfp?: string | null
           streak?: number
+          username?: string | null
         }
         Relationships: []
       }

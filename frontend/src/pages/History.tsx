@@ -60,7 +60,14 @@ function HistoryContent() {
                   {gameEntry.game.name || "Unknown Location"}
                 </h2>
               </div>
-              
+              <div className="flex items-center gap-3 mb-2">
+                {gameEntry.pfp ? (
+                  <img src={gameEntry.pfp} alt={gameEntry.username || 'User'} className="w-8 h-8 rounded-full" />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gray-600" />
+                )}
+                <span className="text-white/80 font-satoshi text-lg">{gameEntry.username || `FID: ${gameEntry.userID}`}</span>
+              </div>
               <div className="flex items-center gap-4 text-sm text-white/70">
                 <div className="flex items-center gap-1">
                   <ClockIcon className="w-4 h-4" />
