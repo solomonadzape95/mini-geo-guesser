@@ -30,6 +30,8 @@ export interface Badge {
 export interface GameResult {
   gameId: number;
   score: number;
+  guessResult?: string | null;
+  quizResult?: string | null;
 }
 
 export interface SaveGameResponse {

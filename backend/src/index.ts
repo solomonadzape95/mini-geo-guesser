@@ -640,7 +640,7 @@ app.post('/games/save', quickAuthMiddleware, async (c) => {
   
   try {
     const body = await c.req.json()
-    const { gameId, score } = body
+    const { gameId, score, guessResult, quizResult } = body
 
     if (!gameId || typeof gameId !== 'number' || !score || typeof score !== 'number') {
       throw new HTTPException(400, { message: 'Invalid game ID or score' })
@@ -656,18 +656,24 @@ app.post('/games/save', quickAuthMiddleware, async (c) => {
     await setUserContext(user.profileId!, supabase)
 
     // Save game result
+    const insertObj: any = {
+      gameID: gameId,
+      score: score,
+      userID: user.profileId!,
+    };
+    if (guessResult !== undefined) insertObj.guessResult = guessResult;
+    if (quizResult !== undefined) insertObj.quizResult = quizResult;
+
     const { data, error } = await supabase
       .from('user_games')
-      .insert({
-        gameID: gameId,
-        score: score,
-        userID: user.profileId!,
-      })
+      .insert(insertObj)
       .select(`
         id,
         score,
         created_at,
         gameID,
+        guessResult,
+        quizResult,
         games (
           id,
           name,
