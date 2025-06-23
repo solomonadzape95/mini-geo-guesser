@@ -1,0 +1,9 @@
+{
+  "name": "Big Apple Brainiac",
+  "description": "You know New York inside and out.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//nyc.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "North America" },
+    { "trait_type": "Level", "value": "Brainiac" }
+  ]
+} 

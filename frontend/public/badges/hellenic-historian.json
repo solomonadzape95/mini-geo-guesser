@@ -1,0 +1,9 @@
+{
+  "name": "Hellenic Historian",
+  "description": "Proved your knowledge of Greece.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//greece.jpg",
+  "attributes": [
+    { "trait_type": "Category", "value": "Europe" },
+    { "trait_type": "Level", "value": "Historian" }
+  ]
+} 

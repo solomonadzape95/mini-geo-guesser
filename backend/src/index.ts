@@ -5,6 +5,8 @@ import { createMiddleware } from 'hono/factory'
 import { HTTPException } from 'hono/http-exception'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { Database } from '../../types'
+import { ethers } from "ethers";
+import { NFT_ABI } from "./abi/nft";
 
 const quickAuthClient = createClient()
 
@@ -192,6 +194,9 @@ const quickAuthMiddleware = createMiddleware<{
     HOSTNAME: string
     SUPABASE_URL: string
     SUPABASE_SERVICE_ROLE_KEY: string
+    NFT_CONTRACT_ADDRESS: string
+    MINT_PRIVATE_KEY: string
+    SEPOLIA_RPC_URL: string
   }
   Variables: {
     user: User
@@ -238,6 +243,9 @@ const app = new Hono<{
     HOSTNAME: string
     SUPABASE_URL: string
     SUPABASE_SERVICE_ROLE_KEY: string
+    NFT_CONTRACT_ADDRESS: string
+    MINT_PRIVATE_KEY: string
+    SEPOLIA_RPC_URL: string
   }
 }>()
 
@@ -452,7 +460,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
       throw new HTTPException(400, { message: 'Badge is locked' })
     }
 
-    // Mint the badge
+    // Mint the badge in DB as before
     const { data, error } = await supabase
       .from('user_badges')
       .insert({
@@ -476,6 +484,28 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
     if (error) {
       console.error('Error minting badge:', error)
       throw new HTTPException(500, { message: 'Failed to mint badge' })
+    }
+
+    // NFT minting logic (only if user has a primaryAddress)
+    if (user.primaryAddress) {
+      try {
+        const contract = new ethers.Contract(
+          c.env.NFT_CONTRACT_ADDRESS,
+          NFT_ABI,
+          new ethers.Wallet(
+            c.env.MINT_PRIVATE_KEY,
+            new ethers.JsonRpcProvider(c.env.SEPOLIA_RPC_URL)
+          )
+        );
+        // Use the badge's metadata JSON as the tokenURI
+        const badgeName = (badge && badge.name && typeof badge.name === 'string') ? badge.name : 'badge';
+        const tokenURI = `https://mini-geo-guesser-a8hd.vercel.app/badges/${badgeName.toLowerCase().replace(/ /g, '-')}.json`;
+        const tx = await contract.mint(user.primaryAddress, tokenURI);
+        await tx.wait();
+        console.log(`NFT minted for badge ${badgeName} to ${user.primaryAddress}`);
+      } catch (err) {
+        console.error('NFT minting failed:', err);
+      }
     }
 
     return c.json({ 

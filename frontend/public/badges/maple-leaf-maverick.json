@@ -1,0 +1,9 @@
+{
+  "name": "Maple Leaf Maverick",
+  "description": "Conquered questions about Ontario, Canada.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//canada.jpg",
+  "attributes": [
+    { "trait_type": "Category", "value": "North America" },
+    { "trait_type": "Level", "value": "Maverick" }
+  ]
+} 

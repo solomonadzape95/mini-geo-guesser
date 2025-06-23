@@ -1,0 +1,9 @@
+{
+  "name": "Lusitanian Lorekeeper",
+  "description": "Demonstrated expertise on Portugal.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//cr7.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "Europe" },
+    { "trait_type": "Level", "value": "Lorekeeper" }
+  ]
+} 

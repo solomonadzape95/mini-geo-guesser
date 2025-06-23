@@ -1,0 +1,9 @@
+{
+  "name": "Noob Guesser",
+  "description": "You made your first guess! Everyone starts somewhere.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//one-badge.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "General" },
+    { "trait_type": "Level", "value": "Noob" }
+  ]
+} 

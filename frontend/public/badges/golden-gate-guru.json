@@ -1,0 +1,9 @@
+{
+  "name": "Golden Gate Guru",
+  "description": "A true expert on San Francisco.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//SF.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "North America" },
+    { "trait_type": "Level", "value": "Guru" }
+  ]
+} 

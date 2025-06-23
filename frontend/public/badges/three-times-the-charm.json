@@ -1,0 +1,9 @@
+{
+  "name": "Three Time's the Charm",
+  "description": "Achieved a 3-day guessing streak. Keep it up!",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//three-badge.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "General" },
+    { "trait_type": "Level", "value": "Streak" }
+  ]
+} 

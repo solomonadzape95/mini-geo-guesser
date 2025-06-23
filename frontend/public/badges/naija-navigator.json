@@ -1,0 +1,9 @@
+{
+  "name": "Naija Navigator",
+  "description": "Successfully answered questions about Nigeria.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//9ja.jpg",
+  "attributes": [
+    { "trait_type": "Category", "value": "Africa" },
+    { "trait_type": "Level", "value": "Navigator" }
+  ]
+} 

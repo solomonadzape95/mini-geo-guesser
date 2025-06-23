@@ -1,0 +1,9 @@
+{
+  "name": "Furious Five",
+  "description": "Maintained a 5-day guessing streak. You're on fire!",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//five-badge.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "General" },
+    { "trait_type": "Level", "value": "Streak" }
+  ]
+} 

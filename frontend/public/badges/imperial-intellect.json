@@ -1,0 +1,9 @@
+{
+  "name": "Imperial Intellect",
+  "description": "Unraveled the mysteries of Japan.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//fuji.svg",
+  "attributes": [
+    { "trait_type": "Category", "value": "Asia" },
+    { "trait_type": "Level", "value": "Intellect" }
+  ]
+} 

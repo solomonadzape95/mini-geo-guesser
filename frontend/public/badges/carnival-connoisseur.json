@@ -1,0 +1,9 @@
+{
+  "name": "Carnival Connoisseur",
+  "description": "Fluent in the facts of Brazil.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//brrazil.jpg",
+  "attributes": [
+    { "trait_type": "Category", "value": "South America" },
+    { "trait_type": "Level", "value": "Connoisseur" }
+  ]
+} 

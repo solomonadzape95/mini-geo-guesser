@@ -1,0 +1,9 @@
+{
+  "name": "Kenyan Conqueror",
+  "description": "Mastered the facts about Nairobi, Kenya.",
+  "image": "https://nmjqspxigvaohkwpnhjy.supabase.co/storage/v1/object/public/badges//kenya.jpg",
+  "attributes": [
+    { "trait_type": "Category", "value": "Africa" },
+    { "trait_type": "Level", "value": "Conqueror" }
+  ]
+} 
