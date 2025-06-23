@@ -236,12 +236,12 @@ function BadgeMintContent() {
                     {txHashes[streakBadge.id].map((hash, idx) => (
                       <a
                         key={hash}
-                        href={`https://sepolia.etherscan.io/tx/${hash}`}
+                        href={`https://explorer.celo.org/alfajores/tx/$${hash}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors block text-center"
                       >
-                        View Transaction {txHashes[streakBadge.id].length > 1 ? `#${idx + 1}` : ''} on Etherscan
+                        View Transaction {txHashes[streakBadge.id].length > 1 ? `#${idx + 1}` : ''} on Celoscan
                       </a>
                     ))}
                     <button

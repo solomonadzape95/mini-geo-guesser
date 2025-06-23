@@ -196,7 +196,7 @@ const quickAuthMiddleware = createMiddleware<{
     SUPABASE_SERVICE_ROLE_KEY: string
     NFT_CONTRACT_ADDRESS: string
     MINT_PRIVATE_KEY: string
-    SEPOLIA_RPC_URL: string
+    CELO_RPC_URL: string
   }
   Variables: {
     user: User
@@ -245,7 +245,7 @@ const app = new Hono<{
     SUPABASE_SERVICE_ROLE_KEY: string
     NFT_CONTRACT_ADDRESS: string
     MINT_PRIVATE_KEY: string
-    SEPOLIA_RPC_URL: string
+    CELO_RPC_URL: string
   }
 }>()
 
@@ -496,7 +496,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
           NFT_ABI,
           new ethers.Wallet(
             c.env.MINT_PRIVATE_KEY,
-            new ethers.JsonRpcProvider(c.env.SEPOLIA_RPC_URL)
+            new ethers.JsonRpcProvider(c.env.CELO_RPC_URL)
           )
         );
         // Use the badge's metadata JSON as the tokenURI
@@ -537,7 +537,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
               NFT_ABI,
               new ethers.Wallet(
                 c.env.MINT_PRIVATE_KEY,
-                new ethers.JsonRpcProvider(c.env.SEPOLIA_RPC_URL)
+                new ethers.JsonRpcProvider(c.env.CELO_RPC_URL)
               )
             );
             const streakBadgeName = streak === 1 ? 'Noob Guesser' : streak === 3 ? "Three Time's the Charm" : 'Furious Five';
