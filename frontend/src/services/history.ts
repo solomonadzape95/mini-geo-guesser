@@ -31,10 +31,13 @@ export async function getUserGameHistory(userId?: number): Promise<ApiResponse<U
       gameID: entry.gameID,
       score: entry.score,
       created_at: entry.created_at,
-     
       userID: entry.userID || userId,
-      game: entry.game as Game
+      game: entry.game as Game,
+      guessResult: entry.guessResult ?? null,
+      quizResult: entry.quizResult ?? null
     }));
+     
+
 
     return { data: historyEntries, error: null };
   } catch (error) {
@@ -72,9 +75,10 @@ export async function getRecentGames(userId?: number, limit: number = 10): Promi
       gameID: entry.gameID,
       score: entry.score,
       created_at: entry.created_at,
-     
       userID: entry.userID || userId,
-      game: entry.game as Game
+      game: entry.game as Game,
+      guessResult: entry.guessResult ?? null,
+      quizResult: entry.quizResult ?? null
     }));
 
     return { data: historyEntries, error: null };
