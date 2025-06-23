@@ -4,6 +4,7 @@ import AppLayout from "../layout/AppLayout";
 import { useBadgesQuery, useMintBadge } from "../hooks/useBadges";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { BadgeWithCategory } from "../types";
+import { getGameHistory } from "../services/auth";
 
 const STREAK_BADGES: { [key: number]: string } = {
   1: "1-Day Streak",
@@ -11,21 +12,21 @@ const STREAK_BADGES: { [key: number]: string } = {
   5: "5-Day Streak",
 };
 
-
 function BadgeMintContent() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { badgeId: gameBadgeId } = location.state || {};
-  
-  const { data: badges, isLoading: isLoadingBadges, error: badgesError } = useBadgesQuery();
+  const { badgeId: gameBadgeId, streak: initialStreak } = location.state || {};
+
+  const { data: badges, isLoading: isLoadingBadges, error: badgesError, refetch: refetchBadges } = useBadgesQuery();
   const mintBadgeMutation = useMintBadge();
-  
+
   const [gameBadge, setGameBadge] = useState<BadgeWithCategory | null>(null);
   const [, setStreakBadge] = useState<BadgeWithCategory | null>(null);
   const [mintStatus, setMintStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const badgeCardRef = useRef(null);
   const [txHashes, setTxHashes] = useState<string[]>([]);
+  const [streak, setStreak] = useState<number | null>(initialStreak || null);
 
   useEffect(() => {
     if (badges && gameBadgeId) {
@@ -34,20 +35,49 @@ function BadgeMintContent() {
     }
   }, [badges, gameBadgeId]);
 
+  // Calculate streak from game history if not provided
+  useEffect(() => {
+    if (streak === null) {
+      getGameHistory().then((res) => {
+        if (res && res.games) {
+          // Calculate streak from games (consecutive days)
+          const dateStrings = Array.from(new Set(res.games.map((g: any) => typeof g.games?.date === 'string' ? g.games.date : undefined))).filter(Boolean) as string[];
+          const dates = dateStrings.sort().reverse();
+          if (dates.length > 0) {
+            let calculatedStreak = 1;
+            let current = new Date(dates[0]);
+            for (let i = 1; i < dates.length; i++) {
+              const next = new Date(dates[i]);
+              const diff = (current.getTime() - next.getTime()) / (1000 * 60 * 60 * 24);
+              if (diff === 1) {
+                calculatedStreak++;
+                current = next;
+              } else {
+                break;
+              }
+            }
+            setStreak(calculatedStreak);
+          }
+        }
+      });
+    }
+  }, [streak]);
+
+  // Check and mint streak badge if needed
   const handleStreakCheck = async () => {
-    // Refetch profile to get the latest streak
-    // const { data: updatedProfile } = await refetchProfile();
-    const streak = 3; // Placeholder for streak, actual implementation needed
-
-    if (streak && STREAK_BADGES[streak] && badges) {
-      const streakBadgeName = STREAK_BADGES[streak];
-      const streakBadgeToMint = badges.find((b: BadgeWithCategory) => b.name === streakBadgeName);
-      const isBadgeAlreadyClaimed = false; // Placeholder for checking if streak badge is already claimed
-
-      if (streakBadgeToMint && !isBadgeAlreadyClaimed) {
-        setStreakBadge(streakBadgeToMint);
-        await mintBadgeMutation.mutateAsync(streakBadgeToMint.id);
+    if (!streak || !badges) return;
+    if (![1, 3, 5].includes(streak)) return;
+    const streakBadgeName = STREAK_BADGES[streak];
+    const streakBadgeToMint = badges.find((b: BadgeWithCategory) => b.name === streakBadgeName);
+    const isBadgeAlreadyClaimed = streakBadgeToMint && streakBadgeToMint.claimed;
+    if (streakBadgeToMint && !isBadgeAlreadyClaimed) {
+      setStreakBadge(streakBadgeToMint);
+      const result = await mintBadgeMutation.mutateAsync(streakBadgeToMint.id);
+      const hashes = (result as any)?.txHashes;
+      if (Array.isArray(hashes)) {
+        setTxHashes((prev) => [...prev, ...hashes.filter((h: any) => typeof h === 'string')]);
       }
+      await refetchBadges();
     }
   };
 
@@ -58,15 +88,14 @@ function BadgeMintContent() {
     try {
       // Mint the game badge
       const result = await mintBadgeMutation.mutateAsync(gameBadge.id);
-      // Type guard for txHashes (cast result as any to avoid linter error)
       const hashes = (result as any)?.txHashes;
       if (Array.isArray(hashes)) {
         setTxHashes(hashes.filter((h: any) => typeof h === 'string'));
       }
       setMintStatus("success");
+      await refetchBadges();
       // Check for streak badge
       await handleStreakCheck();
-      // Navigate to badges page after a delay
       setTimeout(() => {
         navigate("/badges");
       }, 4000);

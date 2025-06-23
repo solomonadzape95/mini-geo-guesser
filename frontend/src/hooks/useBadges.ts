@@ -69,9 +69,8 @@ export const useMintBadge = () => {
   return useMutation({
     mutationFn: mintBadge,
     onSuccess: () => {
-      // Invalidate and refetch badges and profile after minting
+      // Invalidate and refetch badges after minting
       queryClient.invalidateQueries({ queryKey: ["badges"] });
-      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
     },
   });
 };
