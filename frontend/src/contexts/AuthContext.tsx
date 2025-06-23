@@ -7,6 +7,7 @@ interface User {
   profileId?: number;
   username?: string;
   pfpUrl?: string;
+  displayName?: string;
 }
 
 interface AuthContextType {
@@ -48,12 +49,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
         // Use Farcaster Mini App context if available
         let contextUser = undefined;
-        if (sdk.context && sdk.context.user && sdk.context.user.fid) {
+        if (sdk.context && (await sdk.context).user && (await sdk.context).user.fid) {
           contextUser = {
-            fid: sdk.context.user.fid,
-            username: sdk.context.user.username,
-            displayName: sdk.context.user.displayName,
-            pfpUrl: sdk.context.user.pfpUrl || sdk.context.user.pfp,
+            fid: (await sdk.context).user.fid,
+            username: (await sdk.context).user.username,
+            displayName: (await sdk.context).user.displayName,
+            pfpUrl: (await sdk.context).user.pfpUrl,
           };
         }
 
