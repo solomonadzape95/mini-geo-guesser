@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getBadgesWithCategories, getBadgesByCategory, getCategories } from '../services/badges';
-import { getUserProfile, mintBadge } from "../services/auth";
+import { mintBadge } from "../services/auth";
 // import { BadgeWithCategory } from '../types';
 
 // Query keys
@@ -77,8 +77,7 @@ export const useMintBadge = () => {
 };
 
 export const useUserProfile = () => {
-  return useQuery({
-    queryKey: ["userProfile"],
-    queryFn: getUserProfile,
-  });
+  // /profile endpoint does not exist; this hook is deprecated.
+  // You may want to use getCurrentUser and fetch games/badges separately.
+  return { data: undefined, isLoading: false, error: new Error('User profile endpoint does not exist') };
 }; 

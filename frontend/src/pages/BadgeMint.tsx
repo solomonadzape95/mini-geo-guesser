@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
-import { useBadgesQuery, useMintBadge, useUserProfile } from "../hooks/useBadges";
+import { useBadgesQuery, useMintBadge } from "../hooks/useBadges";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { BadgeWithCategory } from "../types";
 
@@ -22,7 +22,6 @@ function BadgeMintContent() {
   const { badgeId: gameBadgeId } = location.state || {};
   
   const { data: badges, isLoading: isLoadingBadges, error: badgesError } = useBadgesQuery();
-  const { refetch: refetchProfile } = useUserProfile();
   const mintBadgeMutation = useMintBadge();
   
   const [gameBadge, setGameBadge] = useState<BadgeWithCategory | null>(null);
@@ -30,6 +29,7 @@ function BadgeMintContent() {
   const [mintStatus, setMintStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const badgeCardRef = useRef(null);
+  const [txHashes, setTxHashes] = useState<string[]>([]);
 
   useEffect(() => {
     if (badges && gameBadgeId) {
@@ -38,20 +38,38 @@ function BadgeMintContent() {
     }
   }, [badges, gameBadgeId]);
 
+  const handleStreakCheck = async () => {
+    // Refetch profile to get the latest streak
+    // const { data: updatedProfile } = await refetchProfile();
+    const streak = 3; // Placeholder for streak, actual implementation needed
+
+    if (streak && STREAK_BADGES[streak] && badges) {
+      const streakBadgeName = STREAK_BADGES[streak];
+      const streakBadgeToMint = badges.find((b: BadgeWithCategory) => b.name === streakBadgeName);
+      const isBadgeAlreadyClaimed = false; // Placeholder for checking if streak badge is already claimed
+
+      if (streakBadgeToMint && !isBadgeAlreadyClaimed) {
+        setStreakBadge(streakBadgeToMint);
+        await mintBadgeMutation.mutateAsync(streakBadgeToMint.id);
+      }
+    }
+  };
+
   const handleMint = async () => {
     if (!gameBadge) return;
-    
     setMintStatus("minting");
     setErrorMessage("");
-    
     try {
       // Mint the game badge
-      await mintBadgeMutation.mutateAsync(gameBadge.id);
+      const result = await mintBadgeMutation.mutateAsync(gameBadge.id);
+      // Type guard for txHashes (cast result as any to avoid linter error)
+      const hashes = (result as any)?.txHashes;
+      if (Array.isArray(hashes)) {
+        setTxHashes(hashes.filter((h: any) => typeof h === 'string'));
+      }
       setMintStatus("success");
-
       // Check for streak badge
       await handleStreakCheck();
-      
       // Navigate to badges page after a delay
       setTimeout(() => {
         navigate("/badges");
@@ -59,23 +77,6 @@ function BadgeMintContent() {
     } catch (error) {
       setMintStatus("error");
       setErrorMessage(error instanceof Error ? error.message : "Failed to mint badge");
-    }
-  };
-
-  const handleStreakCheck = async () => {
-    // Refetch profile to get the latest streak
-    const { data: updatedProfile } = await refetchProfile();
-    const streak = updatedProfile?.streak;
-
-    if (streak && STREAK_BADGES[streak] && badges) {
-      const streakBadgeName = STREAK_BADGES[streak];
-      const streakBadgeToMint = badges.find((b: BadgeWithCategory) => b.name === streakBadgeName);
-      const isBadgeAlreadyClaimed = updatedProfile?.badges.some((b: ProfileBadge) => b.id === streakBadgeToMint?.id && b.claimed);
-
-      if (streakBadgeToMint && !isBadgeAlreadyClaimed) {
-        setStreakBadge(streakBadgeToMint);
-        await mintBadgeMutation.mutateAsync(streakBadgeToMint.id);
-      }
     }
   };
 
@@ -174,28 +175,19 @@ function BadgeMintContent() {
             <p className="text-red-400 text-sm">{errorMessage}</p>
           </div>
         )}
-        {mintStatus === "success" && (
-          <div className="mt-4 p-4 bg-green-500/20 border border-green-500/30 rounded-lg text-center flex flex-col items-center">
-            <p className="text-green-400 text-sm">Game badge minted successfully!</p>
-            {streakBadge && (
-              <p className="text-green-400 text-sm mt-2">
-                You also unlocked the <span className="font-bold">{streakBadge.name}</span> badge!
-              </p>
-            )}
-            <button
-              onClick={() => {
-                // Placeholder for dynamic image sharing logic
-                const badgeName = gameBadge.name;
-                const text = `I just minted the \"${badgeName}\" badge on Geoid!`;
-                const url = "https://mini-geo-guesser-a8hd.vercel.app/";
-                // TODO: Replace url with dynamic image URL after implementing html2canvas or OG image
-                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`;
-                window.open(shareUrl, "_blank");
-              }}
-              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors"
-            >
-              Share on Farcaster
-            </button>
+        {mintStatus === "success" && txHashes.length > 0 && (
+          <div className="mt-4 flex flex-col gap-2">
+            {txHashes.map((hash, idx) => (
+              <a
+                key={hash}
+                href={`https://sepolia.etherscan.io/tx/${hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors block text-center"
+              >
+                View Transaction {txHashes.length > 1 ? `#${idx + 1}` : ''} on Etherscan
+              </a>
+            ))}
           </div>
         )}
       </div>

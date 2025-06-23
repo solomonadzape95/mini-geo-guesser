@@ -74,6 +74,8 @@ function PlayContent() {
   const [showLockModal, setShowLockModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
+  const [guessResult, setGuessResult] = useState<any>(null);
+  const [quizResult, setQuizResult] = useState<any>(null);
 
   // Get actual location from game data
   const actualLocation = gameData?.game.coords ? parseCoordinates(gameData.game.coords) : null;
@@ -175,20 +177,30 @@ function PlayContent() {
       const finalScore = calculateScore(dist);
       setDistance(dist);
       setScore(finalScore);
+      setGuessResult({
+        userGuess,
+        actualLocation,
+        distance: dist,
+        score: finalScore,
+      });
     } else {
       setScore(0);
       setDistance(null);
+      setGuessResult(null);
     }
   };
 
-  const handleQuizComplete = async () => {
+  const handleQuizComplete = async (quizResultData?: any) => {
+    if (quizResultData) setQuizResult(quizResultData);
     // Save game result to database
     if (gameData?.game.id && score !== null && user) {
       try {
         setIsSaving(true);
         await saveGameResult({
           gameId: gameData.game.id,
-          score: score
+          score: score,
+          guessResult: guessResult ? JSON.stringify(guessResult) : null,
+          quizResult: quizResultData ? JSON.stringify(quizResultData) : quizResult ? JSON.stringify(quizResult) : null,
         });
         // Save today's game result in localStorage for home page
         saveTodayGameResult({

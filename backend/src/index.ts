@@ -486,6 +486,8 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
       throw new HTTPException(500, { message: 'Failed to mint badge' })
     }
 
+    // In /badges/mint endpoint, capture all tx hashes
+    let txHashes: string[] = [];
     // NFT minting logic (only if user has a primaryAddress)
     if (user.primaryAddress) {
       try {
@@ -502,6 +504,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
         const tokenURI = `https://mini-geo-guesser-a8hd.vercel.app/badges/${badgeName.toLowerCase().replace(/ /g, '-')}.json`;
         const tx = await contract.mint(user.primaryAddress, tokenURI);
         await tx.wait();
+        txHashes.push(tx.hash);
         console.log(`NFT minted for badge ${badgeName} to ${user.primaryAddress}`);
       } catch (err) {
         console.error('NFT minting failed:', err);
@@ -526,7 +529,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
         await supabase
           .from('user_badges')
           .insert({ badgeID: streakBadgeId, userID: user.profileId! });
-        // Optionally mint NFT for streak badge
+        // In streak badge minting, if NFT is minted, also push tx.hash to txHashes
         if (user.primaryAddress) {
           try {
             const contract = new ethers.Contract(
@@ -541,6 +544,7 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
             const tokenURI = `https://mini-geo-guesser-a8hd.vercel.app/badges/${streakBadgeName.toLowerCase().replace(/ /g, '-').replace(/'/g, '')}.json`;
             const tx = await contract.mint(user.primaryAddress, tokenURI);
             await tx.wait();
+            txHashes.push(tx.hash);
             console.log(`NFT minted for streak badge ${streakBadgeName} to ${user.primaryAddress}`);
           } catch (err) {
             console.error('NFT minting failed for streak badge:', err);
@@ -551,7 +555,8 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
 
     return c.json({ 
       success: true, 
-      badge: data
+      badge: data,
+      txHashes
     })
   } catch (error) {
     if (error instanceof HTTPException) throw error

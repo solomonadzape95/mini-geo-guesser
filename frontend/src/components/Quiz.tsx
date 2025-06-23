@@ -3,7 +3,7 @@ import { CheckCircleIcon, XCircleIcon, ChevronLeftIcon, ChevronRightIcon } from 
 import { Question } from '../types';
 
 interface QuizProps {
-  onComplete: () => void;
+  onComplete: (quizResultData: { answers: (number | null)[]; score: number; totalQuestions: number }) => void;
   questions: Question[];
 }
 
@@ -58,6 +58,12 @@ export default function Quiz({ onComplete, questions }: QuizProps) {
       return acc + (answer === correctAnswerIndex ? 1 : 0);
     }, 0);
 
+    const quizResultData = {
+      answers,
+      score,
+      totalQuestions: questions.length,
+    };
+
     return (
       <div className="bg-white/10 backdrop-blur-md rounded-2xl p-4 sm:p-6 border border-white/20 w-full max-w-2xl mx-auto">
         <h2 className="text-xl sm:text-2xl font-satoshi font-bold mb-4 text-white text-center">Quiz Results</h2>
@@ -90,7 +96,7 @@ export default function Quiz({ onComplete, questions }: QuizProps) {
         </div>
 
         <button
-          onClick={onComplete}
+          onClick={() => onComplete(quizResultData)}
           className="w-full mt-6 px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg font-satoshi hover:bg-blue-700 transition-colors"
         >
           Claim Your Badge

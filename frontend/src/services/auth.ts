@@ -49,15 +49,6 @@ export const getCurrentUser = async (): Promise<User> => {
   return res.json();
 };
 
-// Get user profile with games and badges
-export const getUserProfile = async (): Promise<UserProfile> => {
-  const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/profile`);
-  if (!res.ok) {
-    throw new Error('Failed to get user profile');
-  }
-  return res.json();
-};
-
 // Save game result
 export const saveGameResult = async (gameResult: GameResult): Promise<SaveGameResponse> => {
   const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/games/save`, {

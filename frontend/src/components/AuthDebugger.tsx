@@ -1,6 +1,6 @@
 import { useAuth } from "../contexts/AuthContext";
 import { useState } from "react";
-import { getUserProfile, saveGameResult, getGameHistory, getUserBadges } from "../services/auth";
+import { saveGameResult, getGameHistory, getUserBadges } from "../services/auth";
 
 export default function AuthDebugger() {
   const { user, isLoading, error } = useAuth();
@@ -13,14 +13,14 @@ export default function AuthDebugger() {
     const results: any = {};
 
     try {
-      // Test profile endpoint
-      try {
-        const profile = await getUserProfile();
-        results.profile = { success: true, data: profile };
-        setProfileData(profile);
-      } catch (err) {
-        results.profile = { success: false, error: err };
-      }
+      // Test profile endpoint (REMOVED: /profile endpoint does not exist, use /me instead)
+      // try {
+      //   const profile = await getUserProfile();
+      //   results.profile = { success: true, data: profile };
+      //   setProfileData(profile);
+      // } catch (err) {
+      //   results.profile = { success: false, error: err };
+      // }
 
       // Test game history endpoint
       try {
