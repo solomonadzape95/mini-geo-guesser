@@ -94,7 +94,7 @@ const quickAuthMiddleware = createMiddleware<{
 		SUPABASE_SERVICE_ROLE_KEY: string;
 		NFT_CONTRACT_ADDRESS: string;
 		MINT_PRIVATE_KEY: string;
-		SEPOLIA_RPC_URL: string;
+		CELO_RPC_URL: string;
 	};
 	Variables: {
 		user: User;
@@ -143,7 +143,7 @@ const app = new Hono<{
 		SUPABASE_SERVICE_ROLE_KEY: string;
 		NFT_CONTRACT_ADDRESS: string;
 		MINT_PRIVATE_KEY: string;
-		SEPOLIA_RPC_URL: string;
+		CELO_RPC_URL: string;
 	};
 }>();
 
@@ -274,7 +274,7 @@ app.post("/games/save", quickAuthMiddleware, async (c) => {
 				NFT_ABI,
 				new ethers.Wallet(
 					c.env.MINT_PRIVATE_KEY,
-					new JsonRpcProvider(c.env.SEPOLIA_RPC_URL)
+					new JsonRpcProvider(c.env.CELO_RPC_URL)
 				)
 			);
 
@@ -294,6 +294,8 @@ app.post("/games/save", quickAuthMiddleware, async (c) => {
 				console.error("Minting failed", err);
 			}
 		}
+		////// Link to view tx on explorer //////
+		// const txUrl = `https://explorer.celo.org/alfajores/tx/${tx.hash}`;
 
 		return c.json({ success: true, gameResult: data });
 	} catch (error) {
