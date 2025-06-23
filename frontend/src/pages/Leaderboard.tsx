@@ -1,13 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import AppLayout from "../layout/AppLayout";
 import { useAllTimeLeaderboard, useDailyLeaderboard } from "../hooks/useLeaderboard";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
+
+// Helper to fetch user info from Icebreaker API
+async function fetchUserInfo(fid: string) {
+  try {
+    const res = await fetch(`https://app.icebreaker.xyz/api/v1/fid/${fid}`);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (data.profiles && data.profiles.length > 0) {
+      return {
+        username: data.profiles[0].displayName,
+        pfpUrl: data.profiles[0].avatarUrl,
+      };
+    }
+  } catch {}
+  return null;
+}
 
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState("daily");
 
   const { data: dailyData, isLoading: isLoadingDaily, error: dailyError } = useDailyLeaderboard();
   const { data: allTimeData, isLoading: isLoadingAllTime, error: allTimeError } = useAllTimeLeaderboard();
+  const [userInfoMap, setUserInfoMap] = useState<Record<string, { username: string; pfpUrl: string }>>({});
+
+  // Fetch user info for all FIDs in leaderboard
+  useEffect(() => {
+    const allFids = new Set<string>();
+    (dailyData || []).forEach((entry: any) => allFids.add(entry.fid));
+    (allTimeData || []).forEach((entry: any) => allFids.add(entry.fid));
+    const missingFids = Array.from(allFids).filter(fid => !userInfoMap[fid]);
+    if (missingFids.length === 0) return;
+    let cancelled = false;
+    Promise.all(missingFids.map(fid => fetchUserInfo(fid))).then(results => {
+      if (cancelled) return;
+      const newMap: Record<string, { username: string; pfpUrl: string }> = {};
+      missingFids.forEach((fid, i) => {
+        if (results[i]) newMap[fid] = results[i]!;
+      });
+      setUserInfoMap(prev => ({ ...prev, ...newMap }));
+    });
+    return () => { cancelled = true; };
+  }, [dailyData, allTimeData]);
 
   const renderLeaderboardTable = (data: any[], isAllTime: boolean) => {
     if (!data || data.length === 0) {
@@ -24,7 +60,7 @@ const Leaderboard = () => {
           <thead className="bg-white/5">
             <tr>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Rank</th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Player (FID)</th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">Player</th>
               <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-white/80 uppercase tracking-wider">
                 {isAllTime ? "Total Score" : "Score"}
               </th>
@@ -34,18 +70,28 @@ const Leaderboard = () => {
             </tr>
           </thead>
           <tbody className="bg-white/10 divide-y divide-white/5">
-            {data.map((entry, index) => (
-              <tr key={index}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{index + 1}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">{entry.fid}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-400 font-bold">
-                  {isAllTime ? entry.totalScore.toLocaleString() : entry.score.toLocaleString()}
-                </td>
-                {isAllTime && (
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">{entry.gameCount}</td>
-                )}
-              </tr>
-            ))}
+            {data.map((entry, index) => {
+              const userInfo = userInfoMap[entry.fid];
+              return (
+                <tr key={index}>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">{index + 1}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90 flex items-center gap-2">
+                    {userInfo && userInfo.pfpUrl ? (
+                      <img src={userInfo.pfpUrl} alt={userInfo.username || 'User'} className="w-8 h-8 rounded-full" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-600" />
+                    )}
+                    <span>{userInfo && userInfo.username ? userInfo.username : `FID: ${entry.fid}`}</span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-400 font-bold">
+                    {isAllTime ? entry.totalScore.toLocaleString() : entry.score.toLocaleString()}
+                  </td>
+                  {isAllTime && (
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white/90">{entry.gameCount}</td>
+                  )}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
