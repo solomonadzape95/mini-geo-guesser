@@ -46,16 +46,31 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsLoading(true);
         setError(null);
 
-        // Use Quick Auth to get authenticated user
-        const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/me`);
-        
-        if (res.ok) {
-          const userInfo = await res.json();
-          setUser(userInfo);
+        // Use Farcaster Mini App context if available
+        let contextUser = undefined;
+        if (sdk.context && sdk.context.user && sdk.context.user.fid) {
+          contextUser = {
+            fid: sdk.context.user.fid,
+            username: sdk.context.user.username,
+            displayName: sdk.context.user.displayName,
+            pfpUrl: sdk.context.user.pfpUrl || sdk.context.user.pfp,
+          };
+        }
+
+        if (contextUser) {
+          setUser(contextUser);
           sdk.actions.ready();
         } else {
-          console.error('Authentication failed:', res.status, res.statusText);
-          setError('Authentication failed');
+          // Fallback: Use Quick Auth to get authenticated user from backend
+          const res = await sdk.quickAuth.fetch(`${BACKEND_URL}/me`);
+          if (res.ok) {
+            const userInfo = await res.json();
+            setUser(userInfo);
+            sdk.actions.ready();
+          } else {
+            console.error('Authentication failed:', res.status, res.statusText);
+            setError('Authentication failed');
+          }
         }
       } catch (err) {
         console.error('Auth error:', err);

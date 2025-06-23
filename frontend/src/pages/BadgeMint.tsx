@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import { useBadgesQuery, useMintBadge, useUserProfile } from "../hooks/useBadges";
-import { SkeletonCard } from "../components/Skeleton";
+import infiniteSpinner from "../assets/infinite-spinner.svg";
 import { BadgeWithCategory } from "../types";
 
 const STREAK_BADGES: { [key: number]: string } = {
@@ -29,6 +29,7 @@ function BadgeMintContent() {
   const [streakBadge, setStreakBadge] = useState<BadgeWithCategory | null>(null);
   const [mintStatus, setMintStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const badgeCardRef = useRef(null);
 
   useEffect(() => {
     if (badges && gameBadgeId) {
@@ -83,7 +84,9 @@ function BadgeMintContent() {
     return (
       <div className="w-full min-h-screen flex flex-col items-center justify-center py-12">
         <div className="text-4xl md:text-6xl font-satoshi text-white animate-pulse mb-8">Loading Badge...</div>
-        <SkeletonCard className="max-w-md" />
+        <div className="flex items-center justify-center">
+          <img src={infiniteSpinner} alt="Loading" className="w-16 h-16" />
+        </div>
       </div>
     );
   }
@@ -130,7 +133,7 @@ function BadgeMintContent() {
         </div>
 
         {/* Badge Card */}
-        <div className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6">
+        <div ref={badgeCardRef} className="bg-white/10 backdrop-blur-md rounded-2xl p-6 border border-white/20 mb-6">
           <div className="text-center">
             <img src={gameBadge.imageUrl} alt={gameBadge.name || 'Badge'} className="w-24 h-24 rounded-full mx-auto mb-4" />
             <h2 className="text-2xl font-satoshi text-white mb-2">
@@ -179,17 +182,17 @@ function BadgeMintContent() {
                 You also unlocked the <span className="font-bold">{streakBadge.name}</span> badge!
               </p>
             )}
-             <button
+            <button
               onClick={() => {
+                // Placeholder for dynamic image sharing logic
                 const badgeName = gameBadge.name;
-                const text = `I just minted the "${badgeName}" badge on Geoid!`;
+                const text = `I just minted the \"${badgeName}\" badge on Geoid!`;
                 const url = "https://mini-geo-guesser-a8hd.vercel.app/";
-                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(
-                  text,
-                )}&embeds[]=${encodeURIComponent(url)}`;
+                // TODO: Replace url with dynamic image URL after implementing html2canvas or OG image
+                const shareUrl = `https://warpcast.com/~/compose?text=${encodeURIComponent(text)}&embeds[]=${encodeURIComponent(url)}`;
                 window.open(shareUrl, "_blank");
               }}
-              className="mt-4 bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg"
+              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-full font-satoshi transition-colors"
             >
               Share on Farcaster
             </button>
