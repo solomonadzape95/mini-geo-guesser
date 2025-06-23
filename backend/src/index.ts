@@ -508,6 +508,47 @@ app.post('/badges/mint', quickAuthMiddleware, async (c) => {
       }
     }
 
+    // Mint streak badge if streak is 1, 3, or 5 and not already claimed
+    const streak = await calculateStreak(supabase, user.profileId!);
+    const streakBadgeIds = { 1: 101, 3: 103, 5: 105 } as const; // Replace with actual badge IDs for streaks
+    if ([1, 3, 5].includes(streak)) {
+      const streakKey = streak as 1 | 3 | 5;
+      const streakBadgeId = streakBadgeIds[streakKey];
+      // Check if user already has this streak badge
+      const { data: hasStreakBadge } = await supabase
+        .from('user_badges')
+        .select('id')
+        .eq('userID', user.profileId!)
+        .eq('badgeID', streakBadgeId)
+        .single();
+      if (!hasStreakBadge) {
+        // Mint the streak badge
+        await supabase
+          .from('user_badges')
+          .insert({ badgeID: streakBadgeId, userID: user.profileId! });
+        // Optionally mint NFT for streak badge
+        if (user.primaryAddress) {
+          try {
+            const contract = new ethers.Contract(
+              c.env.NFT_CONTRACT_ADDRESS,
+              NFT_ABI,
+              new ethers.Wallet(
+                c.env.MINT_PRIVATE_KEY,
+                new ethers.JsonRpcProvider(c.env.SEPOLIA_RPC_URL)
+              )
+            );
+            const streakBadgeName = streak === 1 ? 'Noob Guesser' : streak === 3 ? "Three Time's the Charm" : 'Furious Five';
+            const tokenURI = `https://mini-geo-guesser-a8hd.vercel.app/badges/${streakBadgeName.toLowerCase().replace(/ /g, '-').replace(/'/g, '')}.json`;
+            const tx = await contract.mint(user.primaryAddress, tokenURI);
+            await tx.wait();
+            console.log(`NFT minted for streak badge ${streakBadgeName} to ${user.primaryAddress}`);
+          } catch (err) {
+            console.error('NFT minting failed for streak badge:', err);
+          }
+        }
+      }
+    }
+
     return c.json({ 
       success: true, 
       badge: data
@@ -641,9 +682,17 @@ app.post('/games/save', quickAuthMiddleware, async (c) => {
       throw new HTTPException(500, { message: 'Failed to save game result' })
     }
 
+    // Recalculate and update streak
+    const newStreak = await calculateStreak(supabase, user.profileId!);
+    await supabase
+      .from('profiles')
+      .update({ streak: newStreak })
+      .eq('id', user.profileId!);
+
     return c.json({ 
       success: true, 
-      game: data
+      game: data,
+      streak: newStreak
     })
   } catch (error) {
     if (error instanceof HTTPException) throw error
