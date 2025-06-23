@@ -2,7 +2,7 @@ import AppLayout from "../layout/AppLayout";
 import { Link } from "react-router-dom";
 import worldMapImage from "../assets/globe.png";
 import { useState } from "react";
-import { getTodayGameResult, clearTodayGameResult } from "../hooks/useGames";
+import { getTodayGameResult } from "../hooks/useGames";
 import GoogleResultMap from "../components/GoogleResultMap";
 
 export default function LandingPage() {
@@ -115,12 +115,12 @@ export default function LandingPage() {
                 >
                   Close
                 </button>
-                <button
+                {/* <button
                   onClick={() => { clearTodayGameResult(); setShowResult(false); window.location.reload(); }}
                   className="bg-gray-400 hover:bg-gray-500 text-white px-6 py-2 rounded-full font-satoshi font-semibold"
                 >
                   Clear Result
-                </button>
+                </button> */}
               </div>
             </div>
           )}
