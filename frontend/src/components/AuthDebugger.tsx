@@ -6,7 +6,7 @@ export default function AuthDebugger() {
   const { user, isLoading, error } = useAuth();
   const [debugInfo, setDebugInfo] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [profileData, setProfileData] = useState<any>(null);
+  const [profileData, ] = useState<any>(null);
 
   const testEndpoints = async () => {
     setLoading(true);

@@ -11,10 +11,6 @@ const STREAK_BADGES: { [key: number]: string } = {
   5: "5-Day Streak",
 };
 
-interface ProfileBadge {
-  id: number;
-  claimed: boolean;
-}
 
 function BadgeMintContent() {
   const navigate = useNavigate();
@@ -25,7 +21,7 @@ function BadgeMintContent() {
   const mintBadgeMutation = useMintBadge();
   
   const [gameBadge, setGameBadge] = useState<BadgeWithCategory | null>(null);
-  const [streakBadge, setStreakBadge] = useState<BadgeWithCategory | null>(null);
+  const [, setStreakBadge] = useState<BadgeWithCategory | null>(null);
   const [mintStatus, setMintStatus] = useState<"idle" | "minting" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState<string>("");
   const badgeCardRef = useRef(null);
