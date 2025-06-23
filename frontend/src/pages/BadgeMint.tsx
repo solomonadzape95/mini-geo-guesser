@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import {  useLocation } from "react-router-dom";
 import AppLayout from "../layout/AppLayout";
 import { useBadgesQuery, useMintBadge } from "../hooks/useBadges";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
