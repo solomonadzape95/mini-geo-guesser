@@ -39,7 +39,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://bc09-102-90-103-110.ngrok-free.app';
+  const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'https://mini-geo-guessr-auth-production.geoid.workers.dev';
 
   useEffect(() => {
     const authenticateUser = async () => {
