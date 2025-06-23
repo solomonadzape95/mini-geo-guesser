@@ -19,7 +19,7 @@ export default function LandingPage() {
 
   return (
     <AppLayout>
-      <div className="h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 md:pt-16 pt-8 overflow-hidden ">
+      <div className="h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 md:pt-16 pt-8">
         
       <div className="relative w-full max-w-md mx-auto -z-10 flex justify-center items-center">
             <img

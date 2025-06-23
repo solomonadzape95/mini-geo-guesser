@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import AppLayout from "../layout/AppLayout";
-import { useAllTimeLeaderboard, useDailyLeaderboard } from "../hooks/useLeaderboard";
+import { useAllTimeLeaderboardSupabase, useDailyLeaderboardSupabase } from "../hooks/useLeaderboard";
 import infiniteSpinner from "../assets/infinite-spinner.svg";
 
 // Helper to fetch user info from Icebreaker API
@@ -22,8 +22,8 @@ async function fetchUserInfo(fid: string) {
 const Leaderboard = () => {
   const [activeTab, setActiveTab] = useState("daily");
 
-  const { data: dailyData, isLoading: isLoadingDaily, error: dailyError } = useDailyLeaderboard();
-  const { data: allTimeData, isLoading: isLoadingAllTime, error: allTimeError } = useAllTimeLeaderboard();
+  const { data: dailyData, isLoading: isLoadingDaily, error: dailyError } = useDailyLeaderboardSupabase();
+  const { data: allTimeData, isLoading: isLoadingAllTime, error: allTimeError } = useAllTimeLeaderboardSupabase();
   const [userInfoMap, setUserInfoMap] = useState<Record<string, { username: string; pfpUrl: string }>>({});
 
   // Fetch user info for all FIDs in leaderboard

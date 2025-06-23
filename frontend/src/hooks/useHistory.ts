@@ -65,4 +65,7 @@ export function useUserBestScoreQuery(userId?: number) {
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
   });
-} 
+}
+
+// These hooks already use the Supabase-based services in ../services/history
+// No backend API is used for history data. 

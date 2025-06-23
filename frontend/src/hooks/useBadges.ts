@@ -79,4 +79,7 @@ export const useUserProfile = () => {
   // /profile endpoint does not exist; this hook is deprecated.
   // You may want to use getCurrentUser and fetch games/badges separately.
   return { data: undefined, isLoading: false, error: new Error('User profile endpoint does not exist') };
-}; 
+};
+
+// These hooks already use the Supabase-based services in ../services/badges
+// No backend API is used for badges data. 

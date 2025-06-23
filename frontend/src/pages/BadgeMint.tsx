@@ -164,7 +164,7 @@ function BadgeMintContent() {
   }
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center justify-center py-12 px-4">
+    <div className="w-full min-h-screen flex flex-col items-center justify-center py-12 px-4 self-start">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
