@@ -214,21 +214,27 @@ export type Database = {
         Row: {
           created_at: string
           gameID: number | null
+          guessResult: string | null
           id: number
+          quizResult: string | null
           score: number | null
           userID: number | null
         }
         Insert: {
           created_at?: string
           gameID?: number | null
+          guessResult?: string | null
           id?: number
+          quizResult?: string | null
           score?: number | null
           userID?: number | null
         }
         Update: {
           created_at?: string
           gameID?: number | null
+          guessResult?: string | null
           id?: number
+          quizResult?: string | null
           score?: number | null
           userID?: number | null
         }

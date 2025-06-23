@@ -6,7 +6,14 @@ export default function LandingPage() {
   return (
     <AppLayout>
       <div className="h-full flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 md:pt-16 pt-8 overflow-hidden ">
-        {/* Hero Section */}
+        
+      <div className="relative w-full max-w-md mx-auto -z-10 flex justify-center items-center">
+            <img
+              src={worldMapImage}
+              alt="World Map"
+              className="rounded-lg w-1/2 h-auto object-cover"
+            />
+          </div>{/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 font-satoshi">
             Test Your Geography Knowledge
@@ -39,13 +46,7 @@ export default function LandingPage() {
           </div>
 
           {/* Hero Image */}
-          <div className="relative w-full max-w-2xl mx-auto -z-10 flex justify-center items-center">
-            <img
-              src={worldMapImage}
-              alt="World Map"
-              className="rounded-lg w-1/2 h-auto object-cover"
-            />
-          </div>
+       
         </div>
       </div>
     </AppLayout>
